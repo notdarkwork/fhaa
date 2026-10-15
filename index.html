@@ -1,0 +1,2860 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>try{var _t=JSON.parse(localStorage.getItem("pbt"));if(_t)document.documentElement.dataset.theme=_t}catch(e){}</script>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <script>try{var _h=location.hostname;if(location.protocol==="http:"&&!/^(localhost|127\.|10\.|192\.168\.|\[::1\])/.test(_h))location.replace("https:"+location.href.slice(5))}catch(e){}</script>
+    
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f4f6fb" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Panchabhuta" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="description" content="Twenty mind games from the five elements. Train memory, speed, logic and focus, and see how your class ranks." />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>Panchabhuta Mind Games</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Hind:wght@400;600;700&family=Hind+Madurai:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <style>
+      :root {
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        --bg: #f4f2fb;
+        --card: #fff;
+        --ink: #1d1b36;
+        --mut: #5d5b78;
+        --ln: #dcd8ee;
+        --prithvi: #a0692a;
+        --jala: #14839f;
+        --agni: #c93d12;
+        --vayu: #2f8553;
+        --akasha: #6150c4;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #13142b;
+          --card: #1d1f3f;
+          --ink: #ecebff;
+          --mut: #a9a7cc;
+          --ln: #3a3c75;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #13142b;
+        --card: #1d1f3f;
+        --ink: #ecebff;
+        --mut: #a9a7cc;
+        --ln: #3a3c75;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Mukta, "Mukta Malar", system-ui, sans-serif;
+      }
+      .f {
+        font-family: "Yatra One", "Mukta Malar", Georgia, serif;
+        font-weight: 400;
+      }
+      .btn {
+        background: var(--akasha);
+        color: #fff;
+        padding: 0.6rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+      }
+      .btn2 {
+        border: 2px solid var(--ln);
+        padding: 0.45rem 1rem;
+        border-radius: 0.7rem;
+        font-weight: 600;
+      }
+      .inp {
+        background: var(--bg);
+        color: var(--ink);
+        border: 2px solid var(--ln);
+        border-radius: 0.6rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 1.25rem;
+      }
+      .inp:focus-visible,
+      button:focus-visible {
+        outline: 3px solid var(--akasha);
+        outline-offset: 2px;
+      }
+      .gb:hover {
+        background: var(--bg);
+      }
+      .tab {
+        padding: 0.6rem 1.1rem;
+        font-weight: 800;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -1px;
+      }
+      .tab[aria-selected="true"] {
+        border-color: var(--akasha);
+      }
+      .tile {
+        aspect-ratio: 1;
+        background: var(--ln);
+        border-radius: 0.6rem;
+      }
+      .tile.lit {
+        background: var(--prithvi);
+      }
+      .tile.ok {
+        background: var(--vayu);
+      }
+      .tile.bad {
+        background: var(--agni);
+      }
+      .opt {
+        padding: 0.8rem;
+        border: 2px solid var(--ln);
+        border-radius: 0.7rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+      .opt.ok,
+      .card.ok {
+        background: var(--vayu);
+        color: #fff;
+        border-color: var(--vayu);
+      }
+      .opt.bad {
+        background: var(--agni);
+        color: #fff;
+        border-color: var(--agni);
+      }
+      .card {
+        aspect-ratio: 3/4;
+        background: var(--jala);
+        border-radius: 0.6rem;
+        color: transparent;
+        font-size: 0.8rem;
+        font-weight: 800;
+        padding: 0;
+      }
+      .card.up {
+        background: var(--card);
+        border: 2px solid var(--jala);
+        color: var(--ink);
+      }
+      .arena {
+        position: relative;
+        background: var(--bg);
+        border: 2px dashed var(--ln);
+        border-radius: 0.8rem;
+        overflow: hidden;
+      }
+      .spark {
+        position: absolute;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: var(--agni);
+        box-shadow: 0 0 18px 6px #f59e0b;
+      }
+      .star {
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        background: #e8a900;
+        clip-path: polygon(
+          50% 0,
+          61% 35%,
+          98% 35%,
+          68% 57%,
+          79% 91%,
+          50% 70%,
+          21% 91%,
+          32% 57%,
+          2% 35%,
+          39% 35%
+        );
+      }
+      .pad {
+        aspect-ratio: 1;
+        border-radius: 1rem;
+        opacity: 0.5;
+        transition:
+          opacity 0.15s,
+          transform 0.15s;
+      }
+      .pad.on {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      .p0 {
+        background: var(--prithvi);
+      }
+      .p1 {
+        background: var(--jala);
+      }
+      .p2 {
+        background: var(--agni);
+      }
+      .p3 {
+        background: var(--vayu);
+      }
+      body {
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      input,
+      select {
+        -webkit-user-select: text;
+        user-select: text;
+      }
+      button {
+        touch-action: manipulation;
+      }
+      .tab,
+      .btn,
+      .btn2 {
+        min-height: 44px;
+      }
+      .card {
+        font-size: clamp(0.6rem, 2.8vw, 0.8rem);
+        overflow: hidden;
+        overflow-wrap: anywhere;
+        line-height: 1.1;
+      }
+      @media (max-width: 380px) {
+        .opt {
+          font-size: 1rem;
+          padding: 0.7rem 0.4rem;
+        }
+        .tile {
+          border-radius: 0.4rem;
+        }
+      }
+      @keyframes sk {
+        25% {
+          transform: translateX(-6px);
+        }
+        75% {
+          transform: translateX(6px);
+        }
+      }
+      .shake {
+        animation: sk 0.3s;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+
+      nav{backdrop-filter:blur(10px);background:color-mix(in srgb,var(--card) 88%,transparent)!important}
+      nav::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,var(--prithvi) 20%,var(--jala) 20% 40%,var(--agni) 40% 60%,var(--vayu) 60% 80%,var(--akasha) 80%)}
+      #hd h1{background:linear-gradient(100deg,var(--agni),var(--akasha) 55%,var(--jala));-webkit-background-clip:text;background-clip:text;color:transparent}
+      #hd input,#hd select{background:var(--card)}
+      .btn{box-shadow:0 4px 0 color-mix(in srgb,var(--akasha) 55%,#000);transition:transform .1s,box-shadow .1s}
+      .btn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--akasha) 55%,#000)}
+      .btn2{transition:background .15s}.btn2:hover{background:var(--bg)}
+      .stats{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.25rem}
+      .stats span{background:var(--card);border:1px solid var(--ln);border-radius:999px;padding:.3rem .9rem;color:var(--mut)}
+      .stats b{color:var(--ink);font-size:1.15rem}
+      .chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+      .chip{border:2px solid var(--c);border-radius:999px;padding:.3rem 1rem;font-weight:800;min-height:40px;color:var(--ink)}
+      .chip[aria-pressed="true"]{background:var(--c);color:#fff}
+      main section{margin-top:1.75rem}
+      .eh{display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem;padding-left:.75rem;border-left:6px solid var(--c)}
+      .eh span:last-child{color:var(--mut)}
+      .gc{position:relative;text-align:left;padding:1.1rem;background:var(--card);border:1px solid var(--ln);border-top:5px solid var(--c);border-radius:1rem;display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s}
+      .gc:hover{transform:translateY(-4px);box-shadow:0 10px 24px -10px var(--c)}
+      .gc .ic{width:2.8rem;height:2.8rem;display:grid;place-items:center;font-size:1.5rem;border-radius:50%;background:color-mix(in srgb,var(--c) 16%,transparent)}
+      .gc .bd{position:absolute;top:.9rem;right:.9rem;font-size:.8rem;font-weight:800;color:var(--c)}
+      .gc .pl{margin-top:auto;padding-top:.8rem;font-weight:800;color:var(--c)}
+      .clamp{color:var(--mut);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+      #st>div{position:relative;animation:pop .22s ease-out}
+      @keyframes pop{from{transform:scale(.94);opacity:0}}
+      .tbar{height:6px;border-radius:9px;background:var(--ln);margin-top:1rem;overflow:hidden}
+      .tbar i{display:block;height:100%;width:0;background:var(--akasha);transition:width 1s linear}
+      .opt{background:var(--bg);transition:transform .1s,border-color .15s}.opt:hover:not(:disabled){border-color:var(--akasha);transform:translateY(-2px)}
+      .bub{position:absolute;width:46px;height:46px;border-radius:50%;background:var(--vayu);color:#fff;font-weight:800;font-size:1.2rem}
+      .bub.gone{opacity:.15}
+      .cf{position:absolute;top:0;width:9px;height:14px;border-radius:2px;animation:fall 1.4s ease-in forwards;pointer-events:none}
+      @keyframes fall{to{transform:translate(var(--x),420px) rotate(540deg);opacity:0}}
+      #lbt tr.me{background:color-mix(in srgb,var(--akasha) 14%,transparent)}
+      #lbt td{padding:.55rem .4rem}
+
+      /* ===== theme v2: yantra shapes, sticker cards ===== */
+      :root{--bg:#e9f1ee;--card:#fff;--ink:#17203a;--mut:#4b5870;--ln:#b9cdc6;--edge:#17203a;--pop:#ffcf40;--on:#fff;--prithvi:#b86e12;--jala:#0b7fa0;--agni:#d83a14;--vayu:#2a8a5a;--akasha:#5b49c9}
+      @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1a2a;--card:#15273d;--ink:#eaf3f0;--mut:#9fb3c6;--ln:#2a435e;--edge:#6f93b0;--on:#0d1a2a;--prithvi:#e0902c;--jala:#2bb0d4;--agni:#ff6a3d;--vayu:#44c283;--akasha:#9a8cff}}
+      :root[data-theme="dark"]{--bg:#0d1a2a;--card:#15273d;--ink:#eaf3f0;--mut:#9fb3c6;--ln:#2a435e;--edge:#6f93b0;--on:#0d1a2a;--prithvi:#e0902c;--jala:#2bb0d4;--agni:#ff6a3d;--vayu:#44c283;--akasha:#9a8cff}
+      body{font-family:Hind,"Hind Madurai",system-ui,sans-serif;font-size:1.05rem;background-image:radial-gradient(color-mix(in srgb,var(--ink) 12%,transparent) 1px,transparent 1.6px);background-size:22px 22px}
+      .f{font-family:"Rozha One",Georgia,serif}
+      nav{border-bottom:2px solid var(--edge)!important;background:var(--card)!important}
+      #hd h1{background:none;-webkit-text-fill-color:var(--ink);color:var(--ink);text-shadow:4px 4px 0 var(--pop)}
+      .sp{display:inline-block;flex:none;width:2.2rem;height:2.2rem;background:var(--c)}
+      .sp-prithvi{--c:var(--prithvi);clip-path:inset(6%)}
+      .sp-jala{--c:var(--jala);clip-path:circle(47%)}
+      .sp-agni{--c:var(--agni);clip-path:polygon(50% 4%,98% 92%,2% 92%)}
+      .sp-vayu{--c:var(--vayu);clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%)}
+      .sp-akasha{--c:var(--akasha);clip-path:circle(48%);-webkit-mask:radial-gradient(circle,transparent 36%,#000 38%);mask:radial-gradient(circle,transparent 36%,#000 38%)}
+      .yantra{display:flex;gap:.7rem;margin-bottom:1rem}
+      .yantra .sp{width:2.6rem;height:2.6rem;animation:drop .6s cubic-bezier(.3,1.4,.5,1) both;animation-delay:calc(var(--i)*110ms)}
+      @keyframes drop{from{transform:translateY(-30px) scale(.5);opacity:0}}
+      .cd{animation:pop .5s ease-out}
+      .eh{border-left:0;padding-left:0;align-items:center}.eh .sp{width:1.9rem;height:1.9rem}
+      .btn{background:var(--pop);color:#17203a;border:2px solid var(--edge);box-shadow:4px 4px 0 var(--edge)}
+      .btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--edge)}
+      .btn2,.inp{border:2px solid var(--edge)}
+      .btn2{background:var(--card)}
+      .tab[aria-selected="true"]{border-color:var(--agni)}
+      .stats span{border:2px solid var(--edge)}
+      .chip{border:2px solid var(--edge);background:var(--card);box-shadow:3px 3px 0 var(--c)}
+      .chip[aria-pressed="true"]{background:var(--c);color:var(--on)}
+      .gc{border:2px solid var(--edge);box-shadow:5px 5px 0 var(--c);border-radius:.9rem}
+      .gc:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--c)}
+      .gc .ic{border-radius:.7rem;border:2px solid var(--edge);background:color-mix(in srgb,var(--c) 22%,var(--card))}
+      #st>div{border:2px solid var(--edge);box-shadow:8px 8px 0 var(--c,var(--akasha));border-radius:1.1rem}
+      .tbar{border:2px solid var(--edge);height:10px}.tbar i{background:var(--c,var(--akasha))}
+      .opt{border:2px solid var(--edge);background:var(--card)}
+      .opt:hover:not(:disabled){background:var(--pop);color:#17203a;border-color:var(--edge)}
+      .opt.ok,.opt.bad,.card.ok{color:var(--on)}
+      .arena{border-color:var(--edge)}
+      table{border-collapse:separate;border-spacing:0 .5rem}
+      #lbt tr{border:0!important}
+      #lbt td{background:var(--card);border-top:2px solid var(--edge);border-bottom:2px solid var(--edge)}
+      #lbt td:first-child{border-left:2px solid var(--edge);border-radius:.7rem 0 0 .7rem;padding-left:.7rem}
+      #lbt td:last-child{border-right:2px solid var(--edge);border-radius:0 .7rem .7rem 0;padding-right:.8rem}
+      #lbt tr.me td{background:color-mix(in srgb,var(--pop) 35%,var(--card))}
+      :focus-visible{outline:3px solid var(--agni)!important;outline-offset:2px}
+
+      /* ===== 3D layer ===== */ 
+      #hd,#gm,#lbs{position:relative;z-index:1}
+      #hd h1{text-shadow:3px 3px 0 var(--pop),6px 6px 0 color-mix(in srgb,var(--akasha) 70%,transparent)}
+      .gc::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .2s;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.45),transparent 55%)}
+      .gc:hover::after{opacity:1}
+      .opt{box-shadow:0 5px 0 var(--edge)}
+      .opt:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--edge)}
+      .tile{box-shadow:0 5px 0 rgba(0,0,0,.28);transition:transform .1s,box-shadow .1s}
+      .tile:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.28)}
+      .pad{box-shadow:0 6px 0 rgba(0,0,0,.3)}.pad.on{transform:scale(1.05) translateY(-4px)}
+      .bub{background:radial-gradient(circle at 30% 28%,color-mix(in srgb,#fff 45%,var(--vayu)),var(--vayu) 62%);box-shadow:0 5px 0 rgba(0,0,0,.3)}
+      .bub:active{transform:translateY(3px)}
+
+      /* element emblems replace the flat glyph shapes */
+      .sp{background:none!important;clip-path:none!important;-webkit-mask:none!important;mask:none!important;display:grid;place-items:center;font-style:normal;font-size:1.7rem;line-height:1;filter:drop-shadow(0 3px 2px rgba(0,0,0,.3))}
+      .yantra .sp{font-size:2.4rem}
+      .sp-prithvi::before{content:"🌍"}.sp-jala::before{content:"💧"}.sp-agni::before{content:"🔥"}.sp-vayu::before{content:"🌪️"}.sp-akasha::before{content:"🌌"}
+
+      /* ===== theme v3: calmer, one focal point =====
+         Bold moment = the hero title. Everything else is quieter. */
+      :root{--bg:#f3f6f4;--ln:#cfdcd6;--r:14px}
+      @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1624}}
+      :root[data-theme="dark"]{--bg:#0b1624}
+      body{background-image:none;background-attachment:fixed;
+        background-image:radial-gradient(900px 500px at 85% -5%,color-mix(in srgb,var(--akasha) 14%,transparent),transparent 70%),
+                         radial-gradient(700px 420px at -5% 30%,color-mix(in srgb,var(--jala) 12%,transparent),transparent 70%)} 
+
+      /* nav: lighter, single hairline in the five element colours */
+      nav{border-bottom:0!important}
+      nav::after{height:4px}
+      .tab{border-bottom-width:4px;border-radius:8px 8px 0 0}
+      .tab[aria-selected="true"]{background:color-mix(in srgb,var(--akasha) 10%,transparent);border-color:var(--akasha)}
+
+      /* hero: big title, simple shadow, spacious */
+      #hd{padding-top:3rem;padding-bottom:2rem}
+      #hd h1{transform:none;letter-spacing:-.01em;
+        text-shadow:3px 3px 0 var(--pop),6px 6px 0 color-mix(in srgb,var(--akasha) 70%,transparent)}
+      #hd>p[data-i="sub"]{font-size:1.2rem;max-width:34rem;line-height:1.5}
+      .yantra .sp{width:3rem;height:3rem;font-size:2.2rem;filter:none}
+
+      /* name / class / section sit together as one tidy panel */
+      #hd .mt-6{background:var(--card);border:2px solid var(--edge);border-radius:var(--r);
+        padding:1rem 1.1rem;box-shadow:5px 5px 0 var(--pop);display:inline-flex;max-width:100%}
+      .inp{border-width:2px;font-size:1.1rem}
+
+      /* stats + chips: quieter */
+      .stats span{border:1px solid var(--ln);background:transparent}
+      .chip{box-shadow:none;border:2px solid var(--c);min-height:38px;padding:.2rem .9rem;font-weight:700}
+      .chip[aria-pressed="true"]{box-shadow:0 3px 0 color-mix(in srgb,var(--c) 55%,#000)}
+
+      /* element headings: icon + name, no extra noise */
+      main section{margin-top:2.5rem}
+      .eh{gap:.6rem;border-bottom:2px solid var(--ln);padding-bottom:.6rem;margin-bottom:1rem}
+      .eh .f{font-size:1.9rem;line-height:1}
+      .eh b{font-size:1.15rem}
+      .eh span:last-child{margin-left:auto;font-size:.9rem}
+
+      /* game cards: flat, readable, one accent each; no 3D tilt on children */
+      .gc{transform:none!important;border:2px solid var(--edge);border-top:6px solid var(--c);
+        box-shadow:0 4px 0 var(--edge);border-radius:var(--r);padding:1rem 1.1rem;
+        transition:transform .15s,box-shadow .15s,background .15s}
+      .gc:hover{transform:translateY(-3px)!important;box-shadow:0 7px 0 var(--c);background:color-mix(in srgb,var(--c) 6%,var(--card))}
+      .gc:active{transform:translateY(2px)!important;box-shadow:0 2px 0 var(--edge)}
+      .gc .ic,.gc .f,.gc .bd{transform:none}
+      .gc::after{display:none}
+      .gc .ic{width:2.6rem;height:2.6rem;border:0;font-size:1.4rem;border-radius:50%}
+      .gc .f{font-size:1.4rem;line-height:1.15}
+      .gc .bd{background:var(--c);color:var(--on);border-radius:999px;padding:.05rem .55rem;top:.8rem;right:.8rem}
+      .gc .pl{font-size:.95rem}
+
+      /* game window + options: keep sticker feel, drop the heavy offsets */
+      #st>div{box-shadow:6px 6px 0 var(--c,var(--akasha));animation:pop .25s ease-out}
+      .opt{box-shadow:0 4px 0 var(--edge);border-radius:12px}
+
+      /* leaderboard: top 3 get quiet medals */
+      #lbs h2{font-size:2.6rem}
+      #lbt tr:nth-child(1) td:first-child{color:#b8860b;font-weight:800}
+      #lbt td{padding:.7rem .5rem}
+
+      @media (max-width:640px){
+        #hd{padding-top:1.5rem}
+        #hd .mt-6{display:flex;width:100%}
+        .eh span:last-child{display:none}
+        main section{margin-top:1.75rem}
+      }
+
+      /* app feel */
+      html{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
+    
+/* ===== v4 professional theme ===== */
+:root{--bg:#f4f6fb;--card:#fff;--ink:#0f172a;--mut:#5b6478;--ln:#e3e8f2;--edge:#e3e8f2;--pop:#f5b83d;--on:#fff;--r:18px;--brand:#4f46e5;--prithvi:#b7791f;--jala:#0891b2;--agni:#e0431f;--vayu:#16a06a;--akasha:#5b5bd6;--sh:0 1px 2px rgba(15,23,42,.06),0 10px 28px -14px rgba(15,23,42,.22)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1020;--card:#121a2e;--ink:#eef2fb;--mut:#9aa7c0;--ln:#222d48;--edge:#222d48;--on:#0a1020;--prithvi:#e3a13a;--jala:#38bdf8;--agni:#ff7a52;--vayu:#3dd68c;--akasha:#9b9bff;--brand:#818cf8;--sh:0 1px 2px rgba(0,0,0,.4),0 10px 28px -12px rgba(0,0,0,.65)}}
+:root[data-theme="dark"]{--bg:#0a1020;--card:#121a2e;--ink:#eef2fb;--mut:#9aa7c0;--ln:#222d48;--edge:#222d48;--on:#0a1020;--prithvi:#e3a13a;--jala:#38bdf8;--agni:#ff7a52;--vayu:#3dd68c;--akasha:#9b9bff;--brand:#818cf8;--sh:0 1px 2px rgba(0,0,0,.4),0 10px 28px -12px rgba(0,0,0,.65)}
+html{scroll-behavior:smooth}
+body{font-family:Inter,Hind,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif!important;font-size:1rem;background-image:radial-gradient(800px 420px at 90% -8%,color-mix(in srgb,var(--brand) 16%,transparent),transparent 70%),radial-gradient(600px 380px at -8% 35%,color-mix(in srgb,var(--jala) 12%,transparent),transparent 70%)!important;background-attachment:fixed;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px));transition:background-color .3s,color .3s}
+button{transition:transform .12s,background .2s,box-shadow .2s,border-color .2s}button:active:not(:disabled){transform:scale(.97)}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--ln);border-radius:9px}
+nav{background:color-mix(in srgb,var(--card) 80%,transparent)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+nav::after{height:3px;opacity:.9}
+.tab{border-radius:10px!important;border-bottom:0!important;margin:6px 2px;color:var(--mut)}
+.tab[aria-selected="true"]{background:color-mix(in srgb,var(--brand) 14%,transparent)!important;color:var(--brand)}
+.btn{background:linear-gradient(135deg,var(--brand),var(--akasha))!important;color:#fff!important;border:0!important;border-radius:14px!important;box-shadow:0 10px 22px -10px var(--brand)!important;letter-spacing:.01em}
+.btn:active{box-shadow:0 4px 10px -6px var(--brand)!important;transform:scale(.97)!important}
+.btn2,.inp{border:1px solid var(--ln)!important;border-radius:12px!important;background:var(--card)}
+.inp:focus{border-color:var(--brand)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 18%,transparent);outline:0!important}
+:focus-visible{outline:2px solid var(--brand)!important;outline-offset:2px}
+#hd{padding-top:1.6rem!important;animation:vin .5s ease both}
+#hd h1{background:linear-gradient(100deg,var(--brand),var(--jala) 60%,var(--vayu))!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;color:transparent!important;text-shadow:none!important}
+#hd .mt-6{box-shadow:var(--sh)!important;border:1px solid var(--ln)!important;border-radius:var(--r)!important}
+.hi{font-weight:700;color:var(--mut);margin-bottom:.4rem;font-size:1.05rem}
+.yantra .sp{font-size:1.9rem!important;width:2.6rem!important;height:2.6rem!important}
+.stats span{background:var(--card)!important;border:1px solid var(--ln)!important;box-shadow:var(--sh)}
+.chip{box-shadow:none!important;border:1.5px solid color-mix(in srgb,var(--c) 55%,var(--ln))!important;background:var(--card)}
+.chip[aria-pressed="true"]{background:var(--c)!important;color:var(--on)!important;box-shadow:0 8px 16px -8px var(--c)!important}
+.eh{border-bottom:1px solid var(--ln)!important}
+.gc{border:1px solid var(--ln)!important;border-top:1px solid var(--ln)!important;border-radius:var(--r)!important;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 11%,var(--card)),var(--card) 60%)!important;box-shadow:var(--sh)!important;overflow:hidden;animation:vin .45s ease both}
+.gc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+.gc:hover{transform:translateY(-4px)!important;box-shadow:0 18px 34px -16px var(--c)!important}
+.gc:active{transform:scale(.98)!important;box-shadow:var(--sh)!important}
+.gc .ic{border:0!important;border-radius:14px!important}
+.gc .pl::after{content:" →"}
+#st{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);background:rgba(8,12,28,.6)!important}
+#st>div{border:1px solid var(--ln)!important;border-radius:26px!important;box-shadow:0 30px 70px -20px rgba(0,0,0,.55)!important;animation:sup .3s cubic-bezier(.2,.9,.3,1)!important}
+.opt{border:1px solid var(--ln)!important;border-radius:14px!important;background:var(--card)!important;box-shadow:0 2px 0 var(--ln)!important}
+.opt:hover:not(:disabled){background:color-mix(in srgb,var(--brand) 10%,var(--card))!important;border-color:var(--brand)!important;color:var(--ink)!important}
+.opt.ok{background:var(--vayu)!important;border-color:var(--vayu)!important;color:#fff!important}.opt.bad{background:var(--agni)!important;border-color:var(--agni)!important;color:#fff!important}
+.tbar{border:0!important;background:var(--ln)!important;height:8px!important}.tbar i{border-radius:9px;background:linear-gradient(90deg,var(--c,var(--brand)),var(--akasha))!important}
+.arena{border:1px dashed var(--ln)!important;border-radius:16px!important}
+#lbt td{border-color:var(--ln)!important}#lbt tr:nth-child(-n+3) td{background:color-mix(in srgb,var(--pop) 14%,var(--card))}
+#lbt tr.me td{background:color-mix(in srgb,var(--brand) 14%,var(--card))!important}
+#lbs h2{font-size:2.2rem!important}
+#au{background:radial-gradient(700px 420px at 80% 0,color-mix(in srgb,var(--brand) 22%,transparent),transparent 70%),var(--bg)!important}
+#aform{border:1px solid var(--ln)!important;border-radius:26px!important;box-shadow:var(--sh);animation:sup .5s ease both}
+.pwrap{position:relative}.pwrap .inp{padding-right:3rem}.pwrap button{position:absolute;right:6px;top:50%;transform:translateY(-50%)!important;padding:.4rem .6rem;min-height:36px;opacity:.7}
+@keyframes vin{from{opacity:0;transform:translateY(12px)}}@keyframes sup{from{opacity:0;transform:translateY(24px) scale(.97)}}
+/* boot splash */
+#boot{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(600px 400px at 50% 30%,color-mix(in srgb,var(--brand) 24%,transparent),transparent 70%),var(--bg);transition:opacity .5s,visibility .5s}
+#boot.out{opacity:0;visibility:hidden}
+#boot .bw{text-align:center;animation:vin .6s ease both}
+#boot img{width:96px;height:96px;object-fit:contain;margin:0 auto .6rem;animation:flt 2.4s ease-in-out infinite}
+#boot h1{font-family:"Rozha One",Georgia,serif;font-size:3.4rem;line-height:1;margin:0;background:linear-gradient(100deg,var(--brand),var(--jala) 60%,var(--vayu));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+#boot p{color:var(--mut);margin:.4rem 0 1.2rem;letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;font-weight:700}
+#boot .e5{display:flex;gap:.55rem;justify-content:center;margin-bottom:1.3rem}#boot .e5 i{width:11px;height:11px;border-radius:50%;background:var(--c);animation:bnc 1s ease-in-out infinite;animation-delay:calc(var(--i)*.12s)}
+#boot .bp{width:180px;height:5px;border-radius:9px;background:var(--ln);margin:0 auto;overflow:hidden}#boot .bp i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,var(--brand),var(--vayu));animation:ld 1.7s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes bnc{50%{transform:translateY(-8px)}}@keyframes flt{50%{transform:translateY(-6px)}}@keyframes ld{to{width:100%}}
+/* bottom bar, sheet, toast */
+#bb{position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;justify-content:space-around;padding:6px 10px calc(6px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--card) 86%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--ln)}
+#bb button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border-radius:14px;font-size:.72rem;font-weight:700;color:var(--mut)}
+#bb svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#bb button.on{color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,transparent)}
+#gear{display:none}
+@media(max-width:767px){nav [role="tablist"],nav .ml-auto>:not(#gear):not(#mnb){display:none!important}#gear{display:inline-flex!important}nav .max-w-5xl{flex-wrap:nowrap}}
+@media(min-width:768px){#bb{display:none}body{padding-bottom:1rem}}
+#sheet{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;background:rgba(8,12,28,.55);backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+#sheet.on{opacity:1;visibility:visible}
+#sheet .pn{width:100%;max-width:30rem;max-height:90%;overflow:auto;background:var(--card);border-radius:28px 28px 0 0;padding:1.2rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.9,.3,1);box-shadow:0 -20px 60px -20px rgba(0,0,0,.5)}
+#sheet.on .pn{transform:none}
+.grab{width:42px;height:5px;border-radius:9px;background:var(--ln);margin:0 auto 1rem}
+.av{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:1.5rem;color:#fff;background:linear-gradient(135deg,var(--brand),var(--vayu));flex:none}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:1rem 0}.kp div{background:var(--bg);border-radius:14px;padding:.7rem .4rem;text-align:center;font-size:.78rem;color:var(--mut)}.kp b{display:block;font-size:1.4rem;color:var(--ink)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 0;border-top:1px solid var(--ln);font-weight:600}
+.sw{width:50px;height:30px;border-radius:99px;background:var(--ln);position:relative;flex:none}.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.3);transition:transform .2s}.sw.on{background:var(--vayu)}.sw.on::after{transform:translateX(20px)}
+#toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:90;max-width:90%;padding:.7rem 1.1rem;border-radius:14px;background:var(--ink);color:var(--bg);font-weight:600;font-size:.92rem;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+
+.f{font-family:"Rozha One","Hind Madurai",Georgia,serif}
+#hd h1{font-size:clamp(2.6rem,12vw,5.5rem)!important;line-height:1.2!important;overflow-wrap:anywhere}
+#aform h1{font-size:clamp(1.9rem,9vw,2.6rem)!important;line-height:1.25!important}
+#boot h1{font-size:clamp(2.2rem,11vw,3.4rem);line-height:1.25}
+body.lk #hd .mt-6{display:none!important}
+#md,#op{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:1rem;overflow:auto;background:radial-gradient(700px 420px at 85% 0,color-mix(in srgb,var(--agni) 20%,transparent),transparent 70%),radial-gradient(700px 420px at 10% 100%,color-mix(in srgb,var(--jala) 24%,transparent),transparent 70%),var(--bg);transition:opacity .45s,visibility .45s}
+#op{z-index:8900}#md.out,#op.out{opacity:0;visibility:hidden}
+.mw{width:100%;max-width:36rem;text-align:center}.mw h1{font-size:clamp(2.2rem,10vw,3.4rem);line-height:1.25;margin:0;background:linear-gradient(100deg,var(--agni),var(--akasha) 50%,var(--jala));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.mc{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}@media(max-width:520px){.mc{grid-template-columns:1fr}}
+.mk{text-align:center;padding:1.4rem 1rem 1.3rem;border-radius:26px;background:linear-gradient(165deg,color-mix(in srgb,var(--c) 18%,var(--card)),var(--card) 70%);border:1.5px solid color-mix(in srgb,var(--c) 45%,var(--ln));box-shadow:0 18px 40px -22px var(--c);color:var(--ink)}
+.mk:hover{transform:translateY(-4px);box-shadow:0 26px 48px -20px var(--c)}.mk b{display:block;font-size:1.4rem;margin-top:.7rem;color:var(--c)}.mk span{display:block;color:var(--mut);font-size:.88rem;margin-top:.3rem;line-height:1.45}
+.orb{display:grid;place-items:center;width:96px;height:96px;margin:0 auto;border-radius:50%;font-style:normal;font-size:3.2rem;background:radial-gradient(circle,color-mix(in srgb,var(--c) 40%,transparent),transparent 70%);animation:orb 2.4s ease-in-out infinite}
+#mf .orb{animation-name:flame;animation-duration:1.3s}
+@keyframes orb{50%{transform:translateY(-7px) scale(1.06)}}@keyframes flame{0%,100%{transform:scale(1) rotate(-3deg)}35%{transform:scale(1.1,1.18) rotate(3deg)}70%{transform:scale(.97,1.06) rotate(-2deg)}}
+.mp{display:inline-block;margin-left:.3rem;padding:.12rem .65rem;border-radius:99px;font-weight:800;font-size:.78rem;color:var(--c);border:1.5px solid var(--c);background:color-mix(in srgb,var(--c) 10%,var(--card))}
+
+/* ===== v5 effects ===== */
+html{--m1:rgba(155,155,255,.38);--m2:rgba(56,189,248,.3);--m3:rgba(61,214,140,.24)}
+html[data-mode="on"]{--m1:rgba(255,106,61,.42);--m2:rgba(251,191,36,.3);--m3:rgba(244,63,94,.26)}
+html[data-mode="off"]{--m1:rgba(34,211,238,.4);--m2:rgba(99,102,241,.32);--m3:rgba(56,189,248,.28)}
+body::before{content:"";position:fixed;inset:-25%;z-index:-1;pointer-events:none;background:radial-gradient(38% 38% at 20% 25%,var(--m1),transparent 70%),radial-gradient(34% 34% at 80% 30%,var(--m2),transparent 70%),radial-gradient(42% 42% at 55% 90%,var(--m3),transparent 70%);filter:blur(36px);opacity:.6;animation:aur 22s ease-in-out infinite alternate;transition:background 1s}
+@keyframes aur{to{transform:translate(6%,4%) rotate(8deg) scale(1.12)}}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+html[data-mode="on"] #hd h1{background-image:linear-gradient(100deg,#ff6a3d,#fbbf24 50%,#f43f5e)!important}
+html[data-mode="off"] #hd h1{background-image:linear-gradient(100deg,#22d3ee,#6366f1 55%,#38bdf8)!important}
+#hd h1{background-size:230% 100%!important;animation:shim 5s ease-in-out infinite alternate}
+@keyframes shim{to{background-position:100% 0}}
+.yantra .sp{animation:drop .6s cubic-bezier(.3,1.4,.5,1) both,bob 3.2s ease-in-out infinite!important;animation-delay:calc(var(--i)*110ms),calc(var(--i)*260ms + .7s)!important;cursor:pointer}
+.yantra .sp:hover{transform:scale(1.3) rotate(-10deg)}@keyframes bob{50%{transform:translateY(-7px)}}
+.msw{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;padding:4px;margin:0 0 1rem;border-radius:99px;background:color-mix(in srgb,var(--card) 72%,transparent);border:1px solid var(--ln);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:var(--sh)}
+.msw::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:99px;background:linear-gradient(135deg,var(--agni),#fbbf24);box-shadow:0 8px 22px -6px var(--agni);transition:transform .5s cubic-bezier(.3,1.4,.5,1),background .4s,box-shadow .4s}
+.msw[data-m="off"]::before{transform:translateX(100%);background:linear-gradient(135deg,var(--jala),#818cf8);box-shadow:0 8px 22px -6px var(--jala)}
+.msw button{position:relative;z-index:1;display:flex;gap:.4rem;align-items:center;justify-content:center;min-width:7.4rem;padding:.55rem 1rem;border-radius:99px;font-weight:800;font-size:.9rem;color:var(--mut);transition:color .3s}
+.msw[data-m="on"] button[data-m="on"],.msw[data-m="off"] button[data-m="off"]{color:#fff}
+.mp{display:none!important}
+.wave{position:fixed;z-index:9990;width:20px;height:20px;margin:-10px;border-radius:50%;pointer-events:none;transform:scale(0);transition:transform .65s cubic-bezier(.5,0,.2,1)}.wave.go{transform:scale(260)}
+.btn,.btn2,.opt,.chip{position:relative;overflow:hidden}
+.rpl{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.42);transform:scale(0);animation:rpl .65s ease-out forwards}@keyframes rpl{to{transform:scale(1);opacity:0}}
+.gc{will-change:transform}
+.gc:hover{transform:perspective(700px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-5px)!important}
+.gc::after{display:block!important;content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--c) 30%,transparent),transparent 70%)!important}.gc:hover::after{opacity:1!important}
+.gc .ic{transition:transform .35s cubic-bezier(.3,1.6,.5,1)}.gc:hover .ic{transform:scale(1.18) rotate(-8deg)}.gc .pl{transition:letter-spacing .25s}.gc:hover .pl{letter-spacing:.06em}
+.gc{animation-delay:calc(var(--k,0)*70ms)}
+.pg{animation:vin .45s ease both}
+#st>div{animation:sup .3s cubic-bezier(.2,.9,.3,1),glow 3s ease-in-out .3s infinite alternate!important}
+@keyframes glow{to{box-shadow:0 30px 90px -18px var(--c,var(--brand))}}
+#st>div.urgent #tm{color:var(--agni);animation:tick 1s ease-in-out infinite}#st>div.urgent .tbar i{background:var(--agni)!important}
+@keyframes tick{50%{transform:scale(1.35)}}
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
+.mk::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;background:conic-gradient(from var(--a),var(--c),transparent 28%,var(--akasha) 55%,transparent 80%,var(--c));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 5s linear infinite;pointer-events:none}
+.mk{position:relative}@keyframes spin{to{--a:360deg}}
+#lbt tr:nth-child(1) td{background:linear-gradient(100deg,color-mix(in srgb,#f5b83d 28%,var(--card)),var(--card) 50%,color-mix(in srgb,#f5b83d 28%,var(--card)));background-size:240% 100%;animation:shim 3s ease-in-out infinite alternate}
+#lbt tr:nth-child(1){animation:vin .45s ease both;animation-delay:45ms}#lbt tr:nth-child(2){animation:vin .45s ease both;animation-delay:90ms}#lbt tr:nth-child(3){animation:vin .45s ease both;animation-delay:135ms}#lbt tr:nth-child(4){animation:vin .45s ease both;animation-delay:180ms}#lbt tr:nth-child(5){animation:vin .45s ease both;animation-delay:225ms}#lbt tr:nth-child(6){animation:vin .45s ease both;animation-delay:270ms}#lbt tr:nth-child(7){animation:vin .45s ease both;animation-delay:315ms}#lbt tr:nth-child(8){animation:vin .45s ease both;animation-delay:360ms}#lbt tr:nth-child(9){animation:vin .45s ease both;animation-delay:405ms}#lbt tr:nth-child(10){animation:vin .45s ease both;animation-delay:450ms}
+
+/* ===== Pancha Bhoota game layer ===== */
+.tile{font-size:1.7rem;display:grid;place-items:center}
+.tile.lit{background:var(--lc,var(--prithvi))}
+.spark{display:grid;place-items:center;font-size:1.6rem}
+.pad{font-size:2.2rem;display:grid;place-items:center}.p4{background:var(--akasha)}
+.card{white-space:pre-line}
+.bub{width:56px;height:56px;font-size:1.7rem;display:grid;place-items:center;background:radial-gradient(circle at 30% 28%,color-mix(in srgb,#fff 45%,var(--bc,var(--vayu))),var(--bc,var(--vayu)) 62%)}
+.chp{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .8rem;border:2px solid var(--edge);border-radius:99px;background:color-mix(in srgb,var(--c) 24%,var(--card));font-weight:700}.chp i{font-style:normal;font-size:1.4rem}
+.dots{display:flex;gap:.45rem;justify-content:center}.dots i{width:13px;height:13px;border-radius:50%;border:2px solid var(--edge)}.dots i.on{background:var(--vayu)}
+.leg{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.6rem}.leg span{padding:.15rem .65rem;border:2px solid var(--edge);border-radius:99px;background:var(--card);font-size:1.15rem}.leg b{margin-left:.4rem}.ei{font-style:normal}
+.em{position:absolute;font-style:normal;font-size:1.5rem;line-height:1}
+
+/* ===================================================================
+   v6 GAME GRAPHICS — glossy gems, 3D flip cards, glowing orbs,
+   fireballs, glass bubbles, starfield stages, particle bursts
+   =================================================================== */
+:root{--stage1:#1a2358;--stage2:#090d24;--glass:rgba(255,255,255,.14)}
+
+/* ---------- Game window ---------- */
+#st>div{position:relative;background:linear-gradient(180deg,color-mix(in srgb,var(--c,var(--brand)) 10%,var(--card)),var(--card) 38%)!important;overflow:auto}
+#st>div::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;border-radius:26px 26px 0 0;background:linear-gradient(90deg,var(--prithvi),var(--jala),var(--agni),var(--vayu),var(--akasha));background-size:200% 100%;animation:rb 6s linear infinite}
+@keyframes rb{to{background-position:200% 0}}
+#gt{background:linear-gradient(100deg,var(--ink),var(--c,var(--brand)));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+#hud{padding:.3rem .8rem;border-radius:99px;background:color-mix(in srgb,var(--c,var(--brand)) 14%,var(--card));border:1px solid color-mix(in srgb,var(--c,var(--brand)) 40%,var(--ln));font-size:.9rem}
+#tm{padding:.3rem .8rem;border-radius:99px;background:var(--bg);border:1px solid var(--ln);font-variant-numeric:tabular-nums;min-width:3.2rem;text-align:center}
+.tbar{position:relative;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.25)}
+.tbar i{position:relative;box-shadow:0 0 14px var(--c,var(--brand))}
+.tbar i::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);background-size:220% 100%;animation:shn 1.6s linear infinite}
+@keyframes shn{from{background-position:200% 0}to{background-position:-100% 0}}
+#box{perspective:900px}
+#box.shk{animation:shk .35s}
+@keyframes shk{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- Starfield arena / stage ---------- */
+.arena{background:
+  radial-gradient(1.5px 1.5px at 12% 22%,#fff,transparent 60%),radial-gradient(1px 1px at 70% 14%,#cfe3ff,transparent 60%),
+  radial-gradient(1.5px 1.5px at 38% 68%,#ffe9b0,transparent 60%),radial-gradient(1px 1px at 88% 74%,#fff,transparent 60%),
+  radial-gradient(1px 1px at 55% 40%,#bcd,transparent 60%),radial-gradient(1.5px 1.5px at 22% 88%,#fff,transparent 60%),
+  radial-gradient(120% 90% at 50% 0%,var(--stage1),var(--stage2))!important;
+  border:1px solid color-mix(in srgb,var(--c,var(--brand)) 50%,#2a3470)!important;
+  box-shadow:inset 0 0 50px rgba(0,0,0,.65),inset 0 0 0 1px rgba(255,255,255,.06),0 14px 30px -16px var(--c,var(--brand));
+  border-radius:18px!important}
+.arena::before{content:"";position:absolute;inset:-50%;pointer-events:none;opacity:.5;
+  background:linear-gradient(rgba(120,150,255,.13) 1px,transparent 1px) 0 0/34px 34px,linear-gradient(90deg,rgba(120,150,255,.13) 1px,transparent 1px) 0 0/34px 34px;
+  transform:perspective(380px) rotateX(58deg) translateY(10%);animation:grid 6s linear infinite}
+@keyframes grid{to{background-position:0 34px,34px 0}}
+.arena::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(80% 60% at 50% 110%,color-mix(in srgb,var(--c,var(--agni)) 28%,transparent),transparent 70%)}
+.arena>*{z-index:2}
+
+/* ---------- Gem tiles ---------- */
+.tile{position:relative;border:0;border-radius:.85rem!important;overflow:hidden;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--ink) 10%,var(--card)),color-mix(in srgb,var(--ink) 22%,var(--card)))!important;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.35),inset 0 -6px 10px rgba(0,0,0,.28),0 6px 0 rgba(0,0,0,.28),0 12px 16px -8px rgba(0,0,0,.45)!important}
+.tile::before{content:"";position:absolute;left:10%;right:10%;top:5%;height:42%;border-radius:50% 50% 60% 60%/70% 70% 40% 40%;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0));pointer-events:none}
+.tile::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%) -150% 0/250% 100% no-repeat}
+.tile:not(.lit):not(.ok):not(.bad):hover::after{background-position:150% 0;transition:background-position .6s}
+.tile.lit{background:radial-gradient(circle at 50% 35%,color-mix(in srgb,#fff 38%,var(--lc,var(--prithvi))),var(--lc,var(--prithvi)) 70%)!important;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.6),inset 0 -6px 10px rgba(0,0,0,.25),0 6px 0 rgba(0,0,0,.25),0 0 26px 4px var(--lc,var(--prithvi))!important;animation:gem .5s cubic-bezier(.3,1.6,.5,1)}
+.tile.ok{background:radial-gradient(circle at 50% 35%,color-mix(in srgb,#fff 40%,var(--vayu)),var(--vayu) 70%)!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.6),0 6px 0 rgba(0,0,0,.25),0 0 24px 3px var(--vayu)!important;animation:gem .4s cubic-bezier(.3,1.6,.5,1)}
+.tile.bad{background:radial-gradient(circle at 50% 35%,color-mix(in srgb,#fff 30%,var(--agni)),var(--agni) 70%)!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 6px 0 rgba(0,0,0,.25),0 0 24px 3px var(--agni)!important;animation:shk .35s}
+.tile>*,.tile{text-shadow:0 2px 6px rgba(0,0,0,.45)}
+@keyframes gem{0%{transform:scale(.6) rotate(-8deg)}60%{transform:scale(1.12) rotate(3deg)}100%{transform:none}}
+
+/* ---------- 3D flip cards ---------- */
+.card{position:relative;border:0!important;overflow:hidden;border-radius:.8rem!important;transform-style:preserve-3d;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.35) 0 3px,transparent 4px) 0 0/16px 16px,
+    repeating-conic-gradient(from 45deg at 50% 50%,rgba(255,255,255,.12) 0 25%,transparent 0 50%) 0 0/18px 18px,
+    linear-gradient(150deg,color-mix(in srgb,var(--jala) 80%,#fff),var(--jala) 45%,color-mix(in srgb,var(--akasha) 70%,#000))!important;
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.55),inset 0 0 0 5px color-mix(in srgb,var(--jala) 60%,#000),0 6px 0 rgba(0,0,0,.28),0 12px 16px -8px rgba(0,0,0,.5)!important;
+  display:grid;place-items:center;transition:box-shadow .2s}
+.card::before{content:"✦";position:absolute;inset:0;display:grid;place-items:center;font-size:1.6rem;color:rgba(255,255,255,.75);text-shadow:0 0 12px #fff}
+.card.up{color:var(--ink)!important;animation:flip .45s cubic-bezier(.3,1.2,.5,1);
+  background:linear-gradient(160deg,#fffdf6,color-mix(in srgb,var(--prithvi) 14%,#fff))!important;color:#1d1b36!important;
+  box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--jala) 70%,#fff),0 6px 0 rgba(0,0,0,.2),0 12px 16px -8px rgba(0,0,0,.4)!important}
+.card.up::before{display:none}
+.card.ok{background:linear-gradient(160deg,color-mix(in srgb,#fff 25%,var(--vayu)),var(--vayu))!important;color:#fff!important;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7),0 0 24px 3px var(--vayu)!important;animation:matched .6s ease}
+@keyframes flip{from{transform:rotateY(90deg) scale(.9)}to{transform:none}}
+@keyframes matched{40%{transform:scale(1.15) rotate(-3deg)}}
+
+/* ---------- Fireballs ---------- */
+.spark{border:0;animation:sIn .35s cubic-bezier(.3,1.7,.5,1),fl .9s ease-in-out .35s infinite alternate;overflow:visible;filter:saturate(1.2)}
+.spark::before{content:"";position:absolute;inset:3px 8px auto 8px;height:42%;border-radius:50%;background:linear-gradient(rgba(255,255,255,.75),transparent);pointer-events:none}
+.spark::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid currentColor;border-color:rgba(255,255,255,.55);animation:ring 1.1s ease-out infinite;pointer-events:none}
+@keyframes sIn{from{transform:scale(0) rotate(-120deg)}}
+@keyframes fl{to{transform:scale(1.1,.94) rotate(4deg);filter:saturate(1.5) brightness(1.15)}}
+@keyframes ring{from{transform:scale(.8);opacity:.9}to{transform:scale(1.5);opacity:0}}
+
+/* ---------- Glowing pads (Simon) ---------- */
+.pad{position:relative;border:0;overflow:hidden;opacity:.62;
+  background-image:radial-gradient(circle at 32% 24%,rgba(255,255,255,.65),transparent 42%),radial-gradient(circle at 70% 85%,rgba(0,0,0,.32),transparent 60%)!important;
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.35),inset 0 -8px 14px rgba(0,0,0,.3),0 7px 0 rgba(0,0,0,.3),0 14px 18px -8px rgba(0,0,0,.5)!important;
+  text-shadow:0 3px 8px rgba(0,0,0,.45)}
+.pad.on{opacity:1;filter:brightness(1.25) saturate(1.2);box-shadow:inset 0 0 0 4px rgba(255,255,255,.8),0 0 40px 10px currentColor,0 0 70px 14px rgba(255,255,255,.35)!important}
+.p0{color:var(--prithvi)}.p1{color:var(--jala)}.p2{color:var(--agni)}.p3{color:var(--vayu)}.p4{color:var(--akasha)}
+.pad{-webkit-text-fill-color:initial}
+
+/* ---------- Glass bubbles ---------- */
+.bub{border:0!important;overflow:visible;
+  background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.9) 0 8%,rgba(255,255,255,.25) 18%,transparent 34%),radial-gradient(circle at 50% 55%,color-mix(in srgb,var(--bc,var(--vayu)) 55%,transparent),var(--bc,var(--vayu)) 78%)!important;
+  box-shadow:inset 0 -8px 14px rgba(0,0,0,.3),inset 0 0 0 2px rgba(255,255,255,.45),0 0 18px color-mix(in srgb,var(--bc,var(--vayu)) 70%,transparent),0 8px 14px -6px rgba(0,0,0,.5)!important;
+  width:60px!important;height:60px!important;animation:flo 3s ease-in-out infinite;animation-delay:calc(var(--bc-i,0)*-.6s)}
+.bub:nth-child(2n){animation-duration:3.7s;animation-delay:-1s}.bub:nth-child(3n){animation-duration:4.3s;animation-delay:-2s}
+.bub.gone{opacity:1!important;animation:popb .45s ease-out forwards}
+@keyframes flo{50%{transform:translateY(-9px) translateX(3px)}}
+@keyframes popb{40%{transform:scale(1.35);opacity:.9}to{transform:scale(.2);opacity:0}}
+
+/* ---------- Stars & floating emoji ---------- */
+.star{width:19px!important;height:19px!important;background:radial-gradient(circle,#fff6c2,#f5b83d 60%,#c98a00)!important;filter:drop-shadow(0 0 7px #ffd45e);animation:tw 1.4s ease-in-out infinite alternate}
+.star:nth-child(2n){animation-delay:-.4s}.star:nth-child(3n){animation-delay:-.9s}
+@keyframes tw{from{transform:scale(.8) rotate(-8deg);opacity:.7}to{transform:scale(1.15) rotate(8deg);opacity:1}}
+.em{filter:drop-shadow(0 0 8px rgba(255,255,255,.45)) drop-shadow(0 4px 4px rgba(0,0,0,.5));animation:flo 3.2s ease-in-out infinite}
+.em:nth-child(2n){animation-duration:4s;animation-delay:-1.2s}.em:nth-child(3n){animation-duration:2.7s;animation-delay:-.6s}
+
+/* ---------- Answer buttons, pills, legend ---------- */
+.opt{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--card),color-mix(in srgb,var(--c,var(--brand)) 7%,var(--card)))!important;box-shadow:0 4px 0 var(--ln),0 10px 16px -10px rgba(0,0,0,.35)!important}
+.opt::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.4) 50%,transparent 60%) -150% 0/250% 100% no-repeat}
+.opt:hover:not(:disabled)::after{background-position:150% 0;transition:background-position .6s}
+.opt.ok{box-shadow:0 0 24px -2px var(--vayu)!important;animation:matched .5s ease}
+.opt.bad{box-shadow:0 0 24px -2px var(--agni)!important;animation:shk .35s}
+.chp,.leg span{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid color-mix(in srgb,var(--c,var(--ln)) 55%,var(--ln))!important;box-shadow:0 6px 14px -8px var(--c,rgba(0,0,0,.5)),inset 0 1px 0 rgba(255,255,255,.4)}
+.dots i{box-shadow:inset 0 1px 2px rgba(0,0,0,.3);transition:all .3s}.dots i.on{box-shadow:0 0 12px var(--vayu),inset 0 1px 0 rgba(255,255,255,.6);transform:scale(1.2)}
+
+/* ---------- Game picker cards ---------- */
+.gc .ic{background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.7),transparent 40%),linear-gradient(150deg,color-mix(in srgb,var(--c) 70%,#fff),var(--c))!important;box-shadow:0 8px 16px -6px var(--c),inset 0 -4px 8px rgba(0,0,0,.2)}
+
+/* ---------- Particle burst + score pop ---------- */
+.fxp{position:fixed;z-index:9995;pointer-events:none;left:0;top:0;font-style:normal;will-change:transform,opacity;line-height:1}
+.fxp.d{width:9px;height:9px;border-radius:50%;box-shadow:0 0 10px currentColor}
+.fxp.s{border-radius:2px}
+
+@media(prefers-reduced-motion:reduce){.arena::before,.spark,.spark::after,.bub,.em,.star,.tbar i::after,#st>div::before{animation:none!important}}
+
+/* ---------- bigger grids ---------- */
+.g5 .tile,.g6 .tile{border-radius:.6rem!important;font-size:1.3rem}
+.g6 .tile{font-size:1.05rem}
+.g5 .tile:not(.lit):not(.ok):not(.bad),.g6 .tile:not(.lit):not(.ok):not(.bad){box-shadow:inset 0 2px 0 rgba(255,255,255,.35),inset 0 -4px 8px rgba(0,0,0,.28),0 4px 0 rgba(0,0,0,.28)!important}
+.mcg{gap:.4rem}
+.mcg .card{font-size:clamp(.5rem,2.5vw,.74rem)!important;line-height:1.15;padding:2px!important;overflow-wrap:anywhere;font-weight:800}
+.star{width:15px!important;height:15px!important}
+.arena .em{font-size:1.3rem}
+
+/* ===================== v7 smooth-performance layer ===================== */
+body::before{animation:none!important;filter:none!important;inset:0!important;opacity:.55;
+  background:radial-gradient(45% 45% at 18% 18%,var(--m1),transparent 70%),radial-gradient(40% 40% at 82% 22%,var(--m2),transparent 70%),radial-gradient(50% 50% at 55% 98%,var(--m3),transparent 70%)!important}
+body{background-image:none!important;background-attachment:scroll!important}
+nav,#bb,.msw,#sheet,#st,.chp,.leg span{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+nav{background:color-mix(in srgb,var(--card) 95%,transparent)!important}
+#bb{background:var(--card)!important}
+#st{background:rgba(8,12,28,.84)!important}
+#sheet{background:rgba(8,12,28,.72)}
+#st>div{animation:sup .25s cubic-bezier(.2,.9,.3,1)!important}
+#st>div::before,.tbar i::after,.mk::before,#lbt tr:nth-child(1) td{animation:none!important}
+.tbar i::after{display:none}
+#hd h1{animation:none!important;background-size:100% 100%!important}
+.arena::before{animation:none!important;transform:none!important;inset:0!important;opacity:.3}
+.arena{contain:layout paint}
+.star,.em,.bub{animation:none!important;filter:none!important}
+.em{text-shadow:0 2px 4px rgba(0,0,0,.55)}
+.bub.gone{opacity:1!important;animation:popb .35s ease-out forwards!important}
+.spark{animation:sIn .3s cubic-bezier(.3,1.7,.5,1)!important;filter:none!important}
+.spark::after{display:none}
+.pad.on{filter:none!important}
+.opt::after,.tile::after{display:none}
+.gc{will-change:auto}
+main section{content-visibility:auto;contain-intrinsic-size:auto 520px}
+@media(hover:none){.gc:hover{transform:none!important}}
+button,.tile,.card,.opt,.pad,.bub,.spark{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+
+/* ---------- Shabda Analogy layout ---------- */
+.anl{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.4rem;margin:.5rem 0 .2rem;font-weight:800}
+.anl span{padding:.45rem .8rem;border-radius:12px;background:color-mix(in srgb,var(--akasha) 14%,var(--card));border:1px solid color-mix(in srgb,var(--akasha) 45%,var(--ln));font-size:1.1rem}
+.anl span.q{background:var(--akasha);color:#fff;min-width:2.4rem}
+.anl i{font-style:normal;color:var(--mut)}
+
+/* ===================== v8 visual polish (static + transform-only, no lag) ===================== */
+html,body{overflow-x:clip}
+/* rotating mandala behind the hero */
+#hd::before{content:"";position:absolute;z-index:-1;right:-9rem;top:-7rem;width:36rem;height:36rem;max-width:120vw;pointer-events:none;opacity:.16;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-100 -100 200 200' fill='none' stroke='%236d6df0' stroke-width='.7'%3E%3Ccircle r='94'/%3E%3Ccircle r='72'/%3E%3Ccircle r='44'/%3E%3Ccircle r='14'/%3E%3Cg%3E%3Cellipse rx='9' ry='28' cy='-58'/%3E%3Cellipse rx='9' ry='28' cy='-58' transform='rotate(45)'/%3E%3Cellipse rx='9' ry='28' cy='-58' transform='rotate(90)'/%3E%3Cellipse rx='9' ry='28' cy='-58' transform='rotate(135)'/%3E%3Cellipse rx='9' ry='28' cy='-58' transform='rotate(180)'/%3E%3Cellipse rx='9' ry='28' cy='-58' transform='rotate(225)'/%3E%3Cellipse rx='9' ry='28' cy='-58' transform='rotate(270)'/%3E%3Cellipse rx='9' ry='28' cy='-58' transform='rotate(315)'/%3E%3C/g%3E%3Cpath d='M0-94L81 47H-81Z M0 94L-81-47H81Z' stroke-width='.5'/%3E%3C/svg%3E") center/contain no-repeat;
+  animation:mdl 120s linear infinite;will-change:transform}
+@keyframes mdl{to{transform:rotate(360deg)}}
+/* game cards: neon edge, glass highlight, glowing icon orb */
+.gc{box-shadow:var(--sh),inset 0 1px 0 rgba(255,255,255,.4),inset 0 0 0 1px color-mix(in srgb,var(--c) 14%,transparent)!important}
+.gc:hover{box-shadow:0 18px 34px -14px var(--c),inset 0 1px 0 rgba(255,255,255,.5),inset 0 0 0 1px color-mix(in srgb,var(--c) 45%,transparent)!important}
+.gc .ic{box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 22%,transparent),0 8px 16px -6px var(--c),inset 0 -4px 8px rgba(0,0,0,.2)!important}
+.eh{position:relative}.eh::after{content:"";position:absolute;left:0;bottom:-1px;height:3px;width:34%;border-radius:9px;background:linear-gradient(90deg,var(--c),transparent)}
+.btn{box-shadow:0 10px 22px -10px var(--brand),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -3px 6px rgba(0,0,0,.18)!important}
+/* game window: element-coloured neon frame */
+#st>div{box-shadow:0 0 0 1px color-mix(in srgb,var(--c,var(--brand)) 55%,transparent),0 30px 70px -20px rgba(0,0,0,.65),0 0 70px -24px var(--c,var(--brand))!important}
+.tbar{background-image:repeating-linear-gradient(90deg,transparent 0 11px,rgba(0,0,0,.2) 11px 12px)!important;height:10px!important}
+/* nebula arenas with denser starfield */
+.arena{background:
+  radial-gradient(1.5px 1.5px at 8% 18%,#fff,transparent 60%),radial-gradient(1px 1px at 27% 8%,#cfe3ff,transparent 60%),radial-gradient(1.5px 1.5px at 46% 30%,#ffe9b0,transparent 60%),
+  radial-gradient(1px 1px at 63% 12%,#fff,transparent 60%),radial-gradient(1.5px 1.5px at 81% 26%,#cfe3ff,transparent 60%),radial-gradient(1px 1px at 93% 58%,#fff,transparent 60%),
+  radial-gradient(1.5px 1.5px at 15% 62%,#ffe9b0,transparent 60%),radial-gradient(1px 1px at 38% 80%,#fff,transparent 60%),radial-gradient(1.5px 1.5px at 72% 84%,#cfe3ff,transparent 60%),
+  radial-gradient(60% 50% at 15% 25%,color-mix(in srgb,var(--akasha) 38%,transparent),transparent 70%),radial-gradient(55% 45% at 88% 70%,color-mix(in srgb,var(--jala) 34%,transparent),transparent 70%),
+  radial-gradient(45% 40% at 50% 105%,color-mix(in srgb,var(--agni) 30%,transparent),transparent 70%),
+  radial-gradient(120% 90% at 50% 0%,#1b2360,#070a1e)!important}
+/* crystal facets on gem tiles, rims on pads & bubbles */
+.tile::after{display:block!important;content:"";position:absolute;inset:0;pointer-events:none;background:conic-gradient(from 30deg at 50% 55%,rgba(255,255,255,.22),transparent 20%,rgba(0,0,0,.2) 42%,transparent 60%,rgba(255,255,255,.16) 80%,rgba(255,255,255,.22))!important;opacity:.7}
+.pad::after{content:"";position:absolute;inset:9px;border-radius:inherit;border:2px solid rgba(255,255,255,.4);pointer-events:none}
+.pad.on::after{border-color:#fff;box-shadow:0 0 16px #fff,inset 0 0 16px rgba(255,255,255,.7)}
+.bub::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;box-shadow:inset 0 0 0 2px rgba(255,255,255,.45),inset 7px 8px 14px rgba(255,255,255,.28)}
+.opt{box-shadow:0 4px 0 var(--ln),0 10px 18px -10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.45)!important}
+/* leaderboard medals */
+#lbt tr:nth-child(1) td:first-child::after{content:" 🥇"}#lbt tr:nth-child(2) td:first-child::after{content:" 🥈"}#lbt tr:nth-child(3) td:first-child::after{content:" 🥉"}
+@media(prefers-reduced-motion:reduce){#hd::before{animation:none}}
+
+/* last-seconds: huge countdown numbers + pulsing red edge */
+#cdn{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:5;opacity:0;font-weight:900;font-size:min(48vw,17rem);line-height:1;color:#ff5a36;-webkit-text-stroke:3px #fff;text-shadow:0 0 40px rgba(255,70,30,.9),0 8px 0 rgba(0,0,0,.35)}
+#cdn.go{animation:cdp .9s cubic-bezier(.2,.8,.3,1) both}#cdn.hot{color:#ff2a2a}
+@keyframes cdp{0%{opacity:0;transform:scale(2)}15%{opacity:.85}100%{opacity:0;transform:scale(.55)}}
+#st.urg::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:4;box-shadow:inset 0 0 110px 10px rgba(255,40,20,.6);animation:vg 1s ease-in-out infinite}
+@keyframes vg{0%,100%{opacity:.25}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){#cdn.go,#st.urg::after{animation:none}}
+
+/* app-like feel */
+html,body{overscroll-behavior:none;-webkit-touch-callout:none;-webkit-text-size-adjust:100%}
+#ins{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:85;display:none;align-items:center;gap:.6rem;padding:.6rem .6rem .6rem 1rem;border-radius:99px;background:var(--ink);color:var(--bg);font-weight:700;font-size:.92rem;box-shadow:0 14px 30px -10px rgba(0,0,0,.6)}
+#ins.on{display:flex;animation:vin .4s ease both}#ins b{background:linear-gradient(135deg,var(--brand),var(--akasha));color:#fff;padding:.4rem .9rem;border-radius:99px}#ins i{font-style:normal;opacity:.6;padding:0 .4rem}
+@media(display-mode:standalone){#ins{display:none!important}}
+</style>
+  </head>
+  <body>
+    <div id="boot" aria-label="Loading"><div class="bw"><img src="icons/logo.png" alt="" onerror="this.remove()" /><h1 class="bn">Panchabhuta</h1><p class="bs">Mind Games</p><div class="e5"><i style="--c:var(--prithvi);--i:0"></i><i style="--c:var(--jala);--i:1"></i><i style="--c:var(--agni);--i:2"></i><i style="--c:var(--vayu);--i:3"></i><i style="--c:var(--akasha);--i:4"></i></div><div class="bp"><i></i></div></div></div>
+    <script>try{var _l=JSON.parse(localStorage.getItem("pbl"))||"en",_b={en:["Panchabhuta","Mind Games"],hi:["पंचभूत","दिमागी खेल"],ta:["பஞ்சபூதம்","மூளை விளையாட்டுகள்"]}[_l]||["Panchabhuta","Mind Games"];document.querySelector("#boot h1").textContent=_b[0];document.querySelector("#boot p").textContent=_b[1]}catch(e){}</script>
+    <div id="md" role="dialog" aria-modal="true"><select id="mlg" class="inp !text-sm !py-1" style="position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:12px" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="ta">தமிழ்</option></select><div class="mw"><h1 class="bn f"></h1><p id="mq" style="color:var(--mut);font-weight:600"></p><div class="mc"><button id="mf" class="mk" style="--c:var(--agni)"><i class="orb">🔥</i><b></b><span></span></button><button id="mo" class="mk" style="--c:var(--jala)"><i class="orb">💧</i><b></b><span></span></button></div></div></div>
+    <div id="op" class="out" role="dialog" aria-modal="true"><form id="opf" class="w-full max-w-sm p-6" style="background:var(--card);border:1px solid var(--ln);border-radius:26px;box-shadow:var(--sh)"><h2 id="oh" class="f text-3xl text-center mb-4"></h2><input id="onm" class="inp w-full" maxlength="20" autocomplete="off" /><div class="flex gap-2 mt-3"><select id="ock" class="inp flex-1" aria-label="Class"></select><select id="osc" class="inp flex-1" aria-label="Section"></select></div><p id="oer" class="mt-3 text-sm font-semibold" style="color:var(--agni);min-height:1.25rem" role="alert"></p><button id="obtn" class="btn w-full mt-2"></button><button type="button" id="oback" class="btn2 w-full mt-2 text-sm"></button></form></div>
+    <div id="bb" role="tablist"></div><div id="sheet" role="dialog" aria-modal="true"><div class="pn" id="pn"></div></div><div id="toast" role="status"></div>
+    <div id="au" class="fixed inset-0 z-[70] flex items-center justify-center p-4 overflow-y-auto" style="background: var(--bg)">
+      <form id="aform" class="w-full max-w-sm p-6 rounded-2xl" style="background: var(--card); border: 2px solid var(--ln)"><div class="flex justify-end mb-1"><select id="alg" class="inp !text-sm !py-1" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="ta">தமிழ்</option></select></div>
+        <img src="icons/logo.png" alt="Panchabhuta logo" class="h-20 w-20 object-contain mx-auto mb-2" onerror="this.style.display='none'" />
+        <h1 class="bn f text-5xl text-center mb-1">Panchabhuta</h1>
+        <p class="text-center mb-4" style="color: var(--mut)"><span class="bs">Mind Games</span></p>
+        <div id="atabs" class="flex mb-4" role="tablist">
+          <button type="button" id="ain" class="tab flex-1" role="tab">Log in</button>
+          <button type="button" id="aup" class="tab flex-1" role="tab">Sign up</button>
+        </div>
+        <div id="asu" class="hidden space-y-3 mb-3">
+          <input id="anm" class="inp w-full" maxlength="20" placeholder="Your name" autocomplete="name" />
+          <div class="flex gap-2"><select id="ack" class="inp flex-1" aria-label="Class"></select><select id="asc2" class="inp flex-1" aria-label="Section"></select></div>
+        </div>
+        <div id="acr" class="space-y-3">
+          <input id="aem" type="email" required class="inp w-full" placeholder="Email" autocomplete="email" />
+          <input id="apw" type="password" required minlength="6" class="inp w-full" placeholder="Password (at least 6 characters)" autocomplete="current-password" />
+        </div>
+        <p id="aer" class="mt-3 text-sm font-semibold" style="color: var(--agni); min-height: 1.25rem" role="alert"></p>
+        <button id="abtn" class="btn w-full mt-2">Log in</button>
+        <button type="button" id="afg" class="btn2 w-full mt-2 text-sm">Forgot password?</button>
+      </form>
+    </div>
+    <nav
+      class="sticky z-40 border-b"
+      style="
+        top: env(safe-area-inset-top, 0px);
+        background: var(--card);
+        border-color: var(--ln);
+      "
+    >
+      <div class="max-w-5xl mx-auto px-4 flex flex-wrap items-stretch gap-x-2">
+        <span class="f text-2xl py-2 mr-2 flex items-center gap-2"><img src="icons/logo.png" alt="Panchabhuta logo" class="h-8 w-8 object-contain" onerror="this.style.display='none'" /><b class="bn" style="font-weight:inherit">Panchabhuta</b></span>
+        <div
+          class="flex order-last w-full sm:order-none sm:w-auto"
+          role="tablist"
+        >
+          <button id="tg" class="tab" role="tab" data-i="tg">Games</button>
+          <button id="tl" class="tab" role="tab" data-i="lbt">
+            Leaderboard
+          </button>
+        </div>
+        <div class="ml-auto flex items-center gap-2 py-1"><button id="th" class="btn2 !px-3" aria-label="Toggle light and dark theme">◐</button><button id="sn" class="btn2 !px-3" aria-label="Toggle sound">🔊</button><button id="lo" class="btn2 hidden">Log out</button>
+          <select id="lg" class="inp !text-base" aria-label="Language">
+            <option value="en">English</option>
+            <option value="hi">हिन्दी</option>
+            <option value="ta">தமிழ்</option>
+          </select>
+        </div>
+      </div>
+    </nav>
+    <header id="hd" class="max-w-5xl mx-auto px-4 pt-8 pb-6">
+      <div class="yantra" aria-hidden="true"><i class="sp sp-prithvi" style="--i:0"></i><i class="sp sp-jala" style="--i:1"></i><i class="sp sp-agni" style="--i:2"></i><i class="sp sp-vayu" style="--i:3"></i><i class="sp sp-akasha" style="--i:4"></i></div>
+      <h1 class="bn f text-6xl md:text-8xl leading-none">Panchabhuta</h1>
+      <p data-i="sub" class="text-lg max-w-xl mt-3" style="color: var(--mut)">
+        Twenty mind games drawn from the five elements. Train memory, speed, logic
+        and focus, then see how your class ranks.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3 items-end">
+        <label class="block text-sm font-semibold"
+          ><span data-i="name">Name</span><br /><input
+            id="nm"
+            class="inp"
+            maxlength="20"
+            data-p="yn"
+            placeholder="Your name"
+            autocomplete="off"
+        /></label>
+        <label class="block text-sm font-semibold"
+          ><span data-i="cls">Class</span><br /><select
+            id="ck"
+            class="inp w-28"
+          ></select
+        ></label>
+        <label class="block text-sm font-semibold"
+          ><span data-i="sec">Section</span><br /><select
+            id="sc"
+            class="inp w-28"
+          ></select
+        ></label>
+      </div>
+      <p
+        id="msg"
+        class="mt-2 font-semibold"
+        style="color: var(--agni)"
+        role="alert"
+      ></p>
+      <div id="stats" class="stats"></div>
+      <div id="chips" class="chips" role="group" aria-label="Element"></div>
+    </header>
+    <main id="gm" class="max-w-5xl mx-auto px-4 space-y-4 pb-12"></main>
+    <section id="lbs" class="max-w-5xl mx-auto px-4 py-12">
+      <h2 data-i="lbt" class="f text-4xl mb-1">Leaderboard</h2>
+      <p id="cap" class="mb-4" style="color: var(--mut)"></p>
+      <p id="fbs" class="mb-3 text-sm" style="color: var(--mut)"></p>
+      <div class="flex flex-wrap gap-2 mb-4">
+        <select id="fv" class="inp !text-base" aria-label="View">
+          <option value="p" data-i="stu">Students</option>
+          <option value="c" data-i="cla">Classes</option>
+        </select>
+        <select id="fg" class="inp !text-base" aria-label="Game"></select>
+        <select id="fc" class="inp !text-base" aria-label="Class"></select>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <tbody id="lbt"></tbody>
+        </table>
+      </div>
+      <button id="clr" data-i="clr" class="btn2 mt-6 text-sm">
+        Clear all scores
+      </button>
+      <p data-i="note" class="text-sm mt-3" style="color: var(--mut)">
+        Scores are saved in this browser only (localStorage).
+      </p>
+    </section>
+
+    <div
+      id="st"
+      class="hidden fixed inset-0 z-50 flex items-center justify-center p-3"
+      style="
+        background: rgba(10, 10, 30, 0.72);
+        padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+        padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+      "
+    >
+      <div
+        class="w-full max-w-lg rounded-2xl p-5 max-h-full overflow-auto"
+        style="background: var(--card)"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="gt"
+      >
+        <div class="flex justify-between items-start gap-3">
+          <h2 id="gt" class="f text-3xl"></h2>
+          <button id="x" data-i="close" class="btn2 text-sm">Close</button>
+        </div>
+        <p id="gd" class="mt-1" style="color: var(--mut)"></p>
+        <div class="tbar"><i id="tb"></i></div><div class="flex justify-between font-bold my-3">
+          <span id="hud"></span><span id="tm"></span>
+        </div>
+        <div id="box" class="text-center"></div>
+      </div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s),
+        R = (n) => Math.floor(Math.random() * n),
+        sh = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = R(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; },
+        esc = (s) =>
+          String(s).replace(/[&<>"']/g, (c) => "&#" + c.charCodeAt(0) + ";"),
+        ld = (k, d) => {
+          try {
+            return JSON.parse(localStorage.getItem(k)) ?? d;
+          } catch {
+            return d;
+          }
+        },
+        sv = (k, v) => {
+          try {
+            localStorage.setItem(k, JSON.stringify(v));
+          } catch {}
+        };
+      let S = ld("pb", []),
+        P = ld("pbp", { n: "", c: "" }),
+        cur,
+        live = 0,
+        ids = [],
+        vw = "p",
+        LG = ld("pbl", "en");
+
+      /* ---------- firebase: paste your web app config here ---------- */
+      const FB = {
+        apiKey: "AIzaSyAbV4KRVLaq95WuzqX-jkmnXX-ncVByaxE",
+  authDomain: "panchgames-79ef2.firebaseapp.com",
+  databaseURL: "https://panchgames-79ef2-default-rtdb.firebaseio.com",
+  projectId: "panchgames-79ef2",
+  storageBucket: "panchgames-79ef2.firebasestorage.app",
+  messagingSenderId: "352354896686",
+  appId: "1:352354896686:web:7c55dcd45714f264a688bf",
+  measurementId: "G-LPBZ87J6R3"
+      };
+      let db = null, au = null;
+      try {
+        if (window.firebase && !FB.apiKey.startsWith("YOUR")) {
+          firebase.initializeApp(FB);
+          db = firebase.database();
+          au = firebase.auth();
+          S = [];
+        }
+      } catch {}
+      const fbStat = (m, bad) => {
+        const e = $("#fbs");
+        if (e) { e.textContent = m; e.style.color = bad ? "#c93d12" : "var(--mut)"; }
+      };
+      function fbPush(job) {
+        return db.ref("board/" + job.k).transaction((o) => {
+          o = o || {};
+          o.n = job.n;
+          o.c = job.c;
+          o.b = o.b || {};
+          o.b[job.g] = (o.b[job.g] || 0) + job.s;
+          return o;
+        });
+      }
+      let flushing = 0, retry = 0;
+      function fbFlush() {
+        const u = au && au.currentUser;
+        if (!db || !u || flushing) return;
+        const job = ld("pbq", []).find((j) => j.k === u.uid);
+        if (!job) return;
+        flushing = 1;
+        const fail = (e) => {
+          flushing = 0;
+          /* a write the database keeps rejecting is dropped after 5 tries so it cannot block newer scores */
+          sv("pbq", ld("pbq", []).map((j) => (j.j === job.j ? { ...j, a: (j.a || 0) + 1 } : j)).filter((j) => (j.a || 0) < 5));
+          fbStat("Could not save score: " + ((e && e.message) || "check connection / database rules"), 1);
+          clearTimeout(retry);
+          retry = setTimeout(fbFlush, 15000);
+        };
+        fbPush(job).then((r) => {
+          if (!r.committed) throw new Error("not committed");
+          flushing = 0;
+          sv("pbq", ld("pbq", []).filter((j) => j.j !== job.j));
+          fbStat("");
+          fbFlush();
+        }).catch(fail);
+      }
+      function fbSave(g, s) {
+        const u = au && au.currentUser;
+        if (!u) return;
+        sv("pbq", ld("pbq", []).concat({ j: Date.now() + "-" + R(1e6), k: u.uid, n: P.n, c: P.c, g, s }));
+        fbFlush();
+      }
+      const iv = (f, ms) => {
+          const i = setInterval(f, ms);
+          ids.push(i);
+        },
+        tm = (f, ms) => {
+          ids.push(setTimeout(f, ms));
+        },
+        clr = () => {
+          ids.forEach(clearInterval);
+          ids = [];
+        },
+        hud = (t) => ($("#hud").textContent = t),
+        clock = (s, f) => {
+          const tot = s, u = () => { $("#tm").textContent = s + "s"; $("#tb").style.width = (s / tot) * 100 + "%"; };
+          u();
+          iv(() => {
+            s--;
+            u();
+            if (s <= 0) {
+              clr();
+              f();
+            }
+          }, 1000);
+        };
+
+      /* ---------- translations ---------- */
+      const T = {
+        en: {
+          sec: "Section",
+          notefb: "Scores are shared live with everyone playing.",
+          tg: "Games", all: "All", tried: "games tried", tot: "total points",
+          sub: "Twenty mind games drawn from the five elements. Train memory, speed, logic and focus, then see how your class ranks.",
+          name: "Name",
+          cls: "Class",
+          yn: "Your name",
+          ent: "Enter your name, class and section first so your score lands on the board.",
+          lbt: "Leaderboard",
+          stu: "Students",
+          cla: "Classes",
+          allg: "All games (total)",
+          allc: "All classes",
+          capc: "Classes ranked by the average score per student.",
+          capp: 'Students ranked by total points. Every game you play adds to your score. "All games" adds up the points from every game.',
+          none: "No scores yet. Play a game to get on the board.",
+          nocl: "No class",
+          s1: "student",
+          sn: "students",
+          clr: "Clear all scores",
+          clr2: "Tap again to erase all scores",
+          note: "Scores are saved in this browser only (localStorage).",
+          close: "Close",
+          start: "Start",
+          play: "Play",
+          skip: "Skip",
+          again: "Play again",
+          seelb: "See leaderboard",
+          pb: "New personal best!",
+          best: "Your best:",
+          fin: "Finished",
+          score: "Score",
+          level: "Level",
+          lives: "lives",
+          round: "Round",
+          flips: "Flips",
+          qof: "question {0} of {1}",
+          rof: "Round {0} of {1}",
+          next: "Find the next number",
+          odd: "Which one does not belong?",
+          cnt: "How many stars did you see?",
+          cnt2: "Count the stars before they vanish.",
+          tl: "{0} is taller than {1}.",
+          sl: "{1} is shorter than {0}.",
+          who: "Who is the {0}?",
+          ws: ["tallest", "second tallest", "second shortest", "shortest"],
+          e: {
+            prithvi: ["Earth", "Memory and patience"],
+            jala: ["Water", "Flow and calculation"],
+            agni: ["Fire", "Reflex and reasoning"],
+            vayu: ["Air", "Attention and sequence"],
+            akasha: ["Space", "Perception and language"],
+          },
+          pr: [
+            ["Earth", "Smell"],
+            ["Water", "Taste"],
+            ["Fire", "Sight"],
+            ["Air", "Touch"],
+            ["Space", "Sound"],
+          ],
+        },
+        hi: {
+          sec: "सेक्शन",
+          notefb: "स्कोर खेल रहे सभी लोगों के साथ लाइव साझा होते हैं।",
+          tg: "खेल", all: "सभी", tried: "खेल खेले", tot: "कुल अंक",
+          sub: "पाँच तत्वों पर आधारित बीस दिमागी खेल। याददाश्त, गति, तर्क और ध्यान को निखारें और देखें आपकी कक्षा कहाँ है।",
+          name: "नाम",
+          cls: "कक्षा",
+          yn: "आपका नाम",
+          ent: "पहले अपना नाम, कक्षा और सेक्शन चुनें ताकि आपका स्कोर बोर्ड पर दिखे।",
+          lbt: "लीडरबोर्ड",
+          stu: "छात्र",
+          cla: "कक्षाएँ",
+          allg: "सभी खेल (कुल)",
+          allc: "सभी कक्षाएँ",
+          capc: "कक्षाएँ प्रति छात्र औसत स्कोर के आधार पर।",
+          capp: 'छात्र कुल अंकों के आधार पर। हर खेल के अंक जुड़ते जाते हैं। "सभी खेल" सभी खेलों के अंक जोड़ता है।',
+          none: "अभी कोई स्कोर नहीं। बोर्ड पर आने के लिए कोई खेल खेलें।",
+          nocl: "कक्षा नहीं",
+          s1: "छात्र",
+          sn: "छात्र",
+          clr: "सभी स्कोर मिटाएँ",
+          clr2: "सभी स्कोर मिटाने के लिए फिर दबाएँ",
+          note: "स्कोर केवल इसी ब्राउज़र में सहेजे जाते हैं (localStorage)।",
+          close: "बंद करें",
+          start: "शुरू करें",
+          play: "खेलें",
+          skip: "छोड़ें",
+          again: "फिर खेलें",
+          seelb: "लीडरबोर्ड देखें",
+          pb: "नया व्यक्तिगत रिकॉर्ड!",
+          best: "आपका सर्वश्रेष्ठ:",
+          fin: "समाप्त",
+          score: "स्कोर",
+          level: "स्तर",
+          lives: "जीवन",
+          round: "राउंड",
+          flips: "पलटे",
+          qof: "प्रश्न {0}/{1}",
+          rof: "राउंड {0}/{1}",
+          next: "अगली संख्या ज्ञात करें",
+          odd: "कौन-सा अलग है?",
+          cnt: "आपने कितने तारे देखे?",
+          cnt2: "तारे गायब होने से पहले गिनें।",
+          tl: "{0} का कद {1} से ऊँचा है।",
+          sl: "{1} का कद {0} से छोटा है।",
+          who: "{0} कौन है?",
+          ws: ["सबसे ऊँचा", "दूसरा सबसे ऊँचा", "दूसरा सबसे छोटा", "सबसे छोटा"],
+          e: {
+            prithvi: ["धरती", "स्मृति और धैर्य"],
+            jala: ["पानी", "प्रवाह और गणना"],
+            agni: ["आग", "प्रतिक्रिया और तर्क"],
+            vayu: ["हवा", "ध्यान और क्रम"],
+            akasha: ["अंतरिक्ष", "बोध और भाषा"],
+          },
+          pr: [
+            ["पृथ्वी", "गंध"],
+            ["जल", "स्वाद"],
+            ["अग्नि", "दृष्टि"],
+            ["वायु", "स्पर्श"],
+            ["आकाश", "ध्वनि"],
+          ],
+          g: {
+            mem: [
+              "पत्थर स्मृति",
+              "जलते पत्थरों को याद करके दबाएँ। हर स्तर पर एक बढ़ता है। तीन गलतियाँ और खेल खत्म।",
+            ],
+            seq: [
+              "बीज अनुक्रम",
+              "पैटर्न पहचानकर अगली संख्या चुनें। 60 सेकंड। सही पर 10, गलत पर -5।",
+            ],
+            mth: [
+              "प्रवाह गणित",
+              "60 सेकंड में ज़्यादा से ज़्यादा सवाल हल करें। उत्तर लिखकर Enter दबाएँ।",
+            ],
+            mat: [
+              "तत्त्व मिलान",
+              "हर तत्व को उसकी इंद्रिय से मिलाएँ। कम पलटें, ज़्यादा अंक पाएँ।",
+            ],
+            spk: [
+              "चिंगारी रिफ्लेक्स",
+              "चिंगारी बुझने से पहले दबाएँ। चूकने पर -3 अंक। 30 सेकंड।",
+            ],
+            log: [
+              "अग्नि तर्क",
+              "सुराग पढ़कर बताएँ कौन कहाँ है। 90 सेकंड में 10 पहेलियाँ।",
+            ],
+            ech: [
+              "वायु प्रतिध्वनि",
+              "चमकते पैड का क्रम दोहराएँ। हर राउंड में एक और बढ़ता है।",
+            ],
+            odd: [
+              "बेमेल पहचान",
+              "बेमेल चीज़ चुनें (अंग्रेज़ी शब्द)। 45 सेकंड में 10 प्रश्न।",
+            ],
+            str: [
+              "तारा गिनती",
+              "तारे पल भर दिखते हैं। गिनकर संख्या चुनें। 8 राउंड।",
+            ],
+            scr: [
+              "शब्द पहेली",
+              "अंग्रेज़ी शब्दों के अक्षर सही क्रम में लगाएँ। 60 सेकंड।",
+            ],
+          },
+        },
+        ta: {
+          sec: "பிரிவு",
+          notefb: "மதிப்பெண்கள் விளையாடும் அனைவருடனும் நேரலையில் பகிரப்படும்.",
+          tg: "விளையாட்டுகள்", all: "அனைத்தும்", tried: "விளையாடியவை", tot: "மொத்த புள்ளிகள்",
+          sub: "ஐந்து பூதங்களை அடிப்படையாகக் கொண்ட இருபது மூளை விளையாட்டுகள். நினைவு, வேகம், தர்க்கம், கவனத்தைப் பயிற்றுவித்து உங்கள் வகுப்பு எங்கே உள்ளது என்று பாருங்கள்.",
+          name: "பெயர்",
+          cls: "வகுப்பு",
+          yn: "உங்கள் பெயர்",
+          ent: "முதலில் உங்கள் பெயர், வகுப்பு, பிரிவைத் தேர்ந்தெடுங்கள், அப்போது உங்கள் மதிப்பெண் பலகையில் தோன்றும்.",
+          lbt: "முன்னணிப் பலகை",
+          stu: "மாணவர்கள்",
+          cla: "வகுப்புகள்",
+          allg: "அனைத்து விளையாட்டுகள் (மொத்தம்)",
+          allc: "அனைத்து வகுப்புகள்",
+          capc: "ஒரு மாணவருக்கான சராசரி மதிப்பெண் அடிப்படையில் வகுப்புகள்.",
+          capp: 'மொத்த புள்ளிகள் அடிப்படையில் மாணவர்கள். ஒவ்வொரு ஆட்டமும் புள்ளிகளைக் கூட்டும். "அனைத்து விளையாட்டுகள்" அனைத்தையும் கூட்டும்.',
+          none: "இன்னும் மதிப்பெண்கள் இல்லை. பலகையில் இடம்பெற ஒரு விளையாட்டை விளையாடுங்கள்.",
+          nocl: "வகுப்பு இல்லை",
+          s1: "மாணவர்",
+          sn: "மாணவர்கள்",
+          clr: "அனைத்து மதிப்பெண்களையும் அழி",
+          clr2: "அனைத்தையும் அழிக்க மீண்டும் தட்டுங்கள்",
+          note: "மதிப்பெண்கள் இந்த உலாவியில் மட்டுமே சேமிக்கப்படும் (localStorage).",
+          close: "மூடு",
+          start: "தொடங்கு",
+          play: "விளையாடு",
+          skip: "தவிர்",
+          again: "மீண்டும் விளையாடு",
+          seelb: "முன்னணிப் பலகையைப் பார்",
+          pb: "புதிய சொந்த சாதனை!",
+          best: "உங்கள் சிறந்தது:",
+          fin: "முடிந்தது",
+          score: "மதிப்பெண்",
+          level: "நிலை",
+          lives: "உயிர்கள்",
+          round: "சுற்று",
+          flips: "திருப்பங்கள்",
+          qof: "கேள்வி {0}/{1}",
+          rof: "சுற்று {0}/{1}",
+          next: "அடுத்த எண்ணைக் கண்டுபிடி",
+          odd: "எது வேறுபட்டது?",
+          cnt: "எத்தனை நட்சத்திரங்களைப் பார்த்தீர்கள்?",
+          cnt2: "நட்சத்திரங்கள் மறைவதற்குள் எண்ணுங்கள்.",
+          tl: "{0}, {1}-ஐ விட உயரமானவர்.",
+          sl: "{1}, {0}-ஐ விடக் குட்டையானவர்.",
+          who: "{0} யார்?",
+          ws: [
+            "மிக உயரமானவர்",
+            "இரண்டாவது உயரமானவர்",
+            "இரண்டாவது குட்டையானவர்",
+            "மிகக் குட்டையானவர்",
+          ],
+          e: {
+            prithvi: ["நிலம்", "நினைவும் பொறுமையும்"],
+            jala: ["நீர்", "ஓட்டமும் கணக்கும்"],
+            agni: ["நெருப்பு", "வேகமும் தர்க்கமும்"],
+            vayu: ["காற்று", "கவனமும் வரிசையும்"],
+            akasha: ["ஆகாயம்", "புலனுணர்வும் மொழியும்"],
+          },
+          pr: [
+            ["நிலம்", "வாசனை"],
+            ["நீர்", "சுவை"],
+            ["நெருப்பு", "பார்வை"],
+            ["காற்று", "தொடுதல்"],
+            ["ஆகாயம்", "ஒலி"],
+          ],
+          g: {
+            mem: [
+              "கல் நினைவு",
+              "ஒளிரும் கற்களை நினைவில் வைத்துத் தட்டுங்கள். ஒவ்வொரு நிலையிலும் ஒன்று கூடும். மூன்று தவறுகளில் முடிவு.",
+            ],
+            seq: [
+              "விதை வரிசை",
+              "வடிவத்தைக் கண்டு அடுத்த எண்ணைத் தேர்க. 60 வினாடிகள். சரிக்கு 10, தவறுக்கு -5.",
+            ],
+            mth: [
+              "ஓட்டக் கணிதம்",
+              "60 வினாடிகளில் முடிந்தவரை கணக்குகளைத் தீர்க்கவும். விடை எழுதி Enter அழுத்தவும்.",
+            ],
+            mat: [
+              "தத்துவப் பொருத்தம்",
+              "ஒவ்வொரு பூதத்தையும் அதன் புலனுடன் பொருத்துங்கள். குறைவான திருப்பங்கள், அதிக மதிப்பெண்.",
+            ],
+            spk: [
+              "தீப்பொறி வேகம்",
+              "தீப்பொறி அணையும் முன் தட்டுங்கள். தவறினால் -3. 30 வினாடிகள்.",
+            ],
+            log: [
+              "நெருப்புத் தர்க்கம்",
+              "குறிப்புகளைப் படித்து யார் எங்கே என்று கண்டுபிடியுங்கள். 90 வினாடிகளில் 10 புதிர்கள்.",
+            ],
+            ech: [
+              "காற்றின் எதிரொலி",
+              "ஒளிரும் பலகைகளின் வரிசையை மீண்டும் செய்யுங்கள். ஒவ்வொரு சுற்றிலும் ஒன்று கூடும்.",
+            ],
+            odd: [
+              "வேறுபட்டதைக் கண்டுபிடி",
+              "சேராததைத் தேர்க (ஆங்கிலச் சொற்கள்). 45 வினாடிகளில் 10 கேள்விகள்.",
+            ],
+            str: [
+              "நட்சத்திர எண்ணிக்கை",
+              "நட்சத்திரங்கள் சில கணம் தோன்றும். எண்ணி விடையைத் தேர்க. 8 சுற்றுகள்.",
+            ],
+            scr: [
+              "சொல் குழப்பம்",
+              "ஆங்கிலச் சொற்களின் எழுத்துகளை வரிசைப்படுத்துங்கள். 60 வினாடிகள்.",
+            ],
+          },
+        },
+      };
+      const t = (k, ...a) => {
+          let s = (T[LG] || T.en)[k] ?? T.en[k];
+          if (typeof s == "string")
+            a.forEach((v, i) => (s = s.replace("{" + i + "}", v)));
+          return s;
+        },
+        gi = (g) => { const x = (t("g") || {})[g.id]; return x ? [x[0], x[1] || g.d] : [g.n, g.d]; };
+
+      /* ---------- shared helpers ---------- */
+      function mc(b, q, o, a, cb) {
+        b.innerHTML =
+          '<p class="text-xl">' +
+          q +
+          '</p><div class="grid grid-cols-2 gap-2 mt-4"></div>';
+        const g = b.lastChild;
+        o.forEach((v) => {
+          const x = document.createElement("button");
+          x.className = "opt";
+          x.textContent = v;
+          x.onclick = () => {
+            [...g.children].forEach((y) => (y.disabled = 1));
+            x.classList.add(v == a ? "ok" : "bad");
+          beep(v == a);
+            tm(() => cb(v == a), 220);
+          };
+          g.append(x);
+        });
+      }
+      const opts = (a) => {
+        const s = new Set([a]);
+        let g = 0;
+        while (s.size < 4) {
+          const v = a + R(11) - 5 + (++g > 40 ? g : 0);
+          if (v > 0) s.add(v);
+        }
+        return sh([...s]);
+      };
+      function quiz(b, secs, gen, n, pts, pen) {
+        let sc = 0,
+          i = 0;
+        clock(secs, () => end(sc));
+        const nx = () => {
+          if (i++ >= n) return end(sc);
+          const [q, o, a] = gen();
+          mc(b, q, o, a, (ok) => {
+            sc = Math.max(0, sc + (ok ? pts : -pen));
+            hud(t("score") + " " + sc + ", " + t("qof", i, n));
+            nx();
+          });
+        };
+        nx();
+      }
+
+      /* ---------- Prithvi ---------- */
+      function mem(b) {
+        let lv = 3, lives = 3, sc = 0, hit = 0, lock = 1, em = {}, want, side = 0, T = [];
+        const sideOf = (l) => (l <= 4 ? 4 : l <= 8 ? 5 : 6),
+          build = (n) => {
+            side = n;
+            b.innerHTML = '<div class="grid gap-2 mx-auto max-w-full g' + n + '" style="grid-template-columns:repeat(' + n + ',1fr);width:' + (n == 4 ? 18 : n == 5 ? 22 : 25) + 'rem"></div>';
+            T = [...Array(n * n)].map((_, i) => {
+              const t = document.createElement("button");
+              t.className = "tile";
+              t.setAttribute("aria-label", "Tile " + (i + 1));
+              t.onclick = () => pick(i);
+              b.firstChild.append(t);
+              return t;
+            });
+          },
+          u = () => hud(`${t("level")} ${lv - 2}, ${t("lives")} ${lives}, ${t("score")} ${sc}`),
+          reset = () => T.forEach((t) => { t.className = "tile"; t.textContent = ""; }),
+          round = () => {
+            lock = 1;
+            hit = 0;
+            if (sideOf(lv) != side) build(sideOf(lv));
+            want = new Set();
+            const cells = side * side;
+            while (want.size < Math.min(lv, Math.floor(cells * 0.6))) want.add(R(cells));
+            reset();
+            u();
+            want.forEach((i) => { em[i] = R(5); T[i].classList.add("lit"); T[i].textContent = EMO[em[i]]; T[i].style.setProperty("--lc", "var(" + ELV[em[i]] + ")"); });
+            tm(() => { reset(); lock = 0; }, 600 + lv * 130);
+          };
+        function pick(i) {
+          if (lock || T[i].className != "tile") return;
+          if (want.has(i)) {
+            T[i].classList.add("ok"); T[i].textContent = EMO[em[i]];
+            if (++hit == want.size) {
+              sc += want.size * 10;
+              lv++;
+              lock = 1;
+              tm(round, 600);
+            }
+          } else {
+            T[i].classList.add("bad");
+            lives--;
+            u();
+            if (!lives) { lock = 1; return tm(() => end(sc), 600); }
+            lock = 1;
+            tm(round, 700);
+          }
+        }
+        build(sideOf(lv));
+        round();
+      }
+      const seqG = () => {
+        const ty = R(4),
+          a = 1 + R(9);
+        let s;
+        if (ty == 0) {
+          const d = 2 + R(7);
+          s = [0, 1, 2, 3, 4].map((i) => a + d * i);
+        } else if (ty == 1) {
+          const r = 2 + R(2);
+          s = [0, 1, 2, 3, 4].map((i) => a * r ** i);
+        } else if (ty == 2) {
+          const k = 1 + R(5);
+          s = [0, 1, 2, 3, 4].map((i) => (i + k) ** 2);
+        } else {
+          const x = 1 + R(4),
+            y = 2 + R(5);
+          s = [a];
+          for (let i = 1; i < 5; i++) s.push(s[i - 1] + (i % 2 ? x : y));
+        }
+        return [
+          t("next") +
+            '<br><b class="f text-3xl">' +
+            s.slice(0, 4).join(",  ") +
+            ",  ?</b>",
+          opts(s[4]),
+          s[4],
+        ];
+      };
+
+      /* ---------- Jala ---------- */
+      const VAL = [5, 4, 3, 2, 1]; /* qualities each element holds: Earth 5 ... Space 1 */
+      function math(b) {
+        let sc = 0, q;
+        clock(60, () => end(sc));
+        b.innerHTML = `<div class="leg">${EMO.map((e, i) => `<span>${e}<b>${VAL[i]}</b></span>`).join("")}</div><p class="text-sm" style="color:var(--mut)">${t("valn")}</p><p id="fmq" class="f text-5xl my-4"></p><input id="fma" type="number" inputmode="numeric" class="inp text-center w-40" enterkeyhint="done" aria-label="Answer"><div class="mt-3"><button id="fmb" class="btn2">${t("okb")}</button></div>`;
+        const ma = $("#fma"),
+          E = (x) => `<i class="ei">${EMO[x]}</i>`,
+          nx = () => {
+            const i = R(5), j = R(5), k = R(5), o = R(5), h = VAL[i] >= VAL[j] ? [i, j] : [j, i];
+            q = [
+              [E(i) + " + " + E(j), VAL[i] + VAL[j]],
+              [E(h[0]) + " − " + E(h[1]), VAL[h[0]] - VAL[h[1]]],
+              [E(i) + " × " + E(j), VAL[i] * VAL[j]],
+              [E(i) + " + " + E(j) + " + " + E(k), VAL[i] + VAL[j] + VAL[k]],
+              [E(i) + " × " + E(j) + " + " + E(k), VAL[i] * VAL[j] + VAL[k]],
+            ][o];
+            $("#fmq").innerHTML = q[0];
+            ma.value = "";
+            ma.focus();
+          };
+        const sub = () => {
+          if (ma.value !== "" && +ma.value === q[1]) {
+            sc += 10;
+            hud(t("score") + " " + sc);
+          } else if (ma.value !== "") {
+            ma.classList.add("shake");
+            tm(() => ma.classList.remove("shake"), 300);
+          }
+          nx();
+        };
+        ma.onkeydown = (e) => { if (e.key == "Enter") { e.preventDefault(); sub(); } };
+        $("#fmb").onclick = sub;
+        nx();
+      }
+      const PR = [
+        ["Earth", "Smell"],
+        ["Water", "Taste"],
+        ["Fire", "Sight"],
+        ["Air", "Touch"],
+        ["Space", "Sound"],
+      ];
+      function match(b) {
+        const og = t("og"),
+          tn = { en: ["Gandha", "Rasa", "Rupa", "Sparsha", "Shabda"], hi: ["गंध", "रस", "रूप", "स्पर्श", "शब्द"], ta: ["கந்தம்", "ரசம்", "ரூபம்", "ஸ்பரிசம்", "சப்தம்"] }[LG] || ["Gandha", "Rasa", "Rupa", "Sparsha", "Shabda"],
+          PAIRS = 10,
+          C = sh([
+            ...t("pr").flatMap((p, i) => [[EMO[i] + "\n" + p[0], i], [SEN[i] + "\n" + p[1], i]]),
+            ...[0, 1, 2, 3, 4].flatMap((i) => [["🫀\n" + og[i], 5 + i], ["✨\n" + tn[i], 5 + i]]),
+          ]);
+        let a = null, lock = 0, mv = 0, done = 0;
+        b.innerHTML = '<div class="grid grid-cols-5 gap-2 max-w-lg mx-auto mcg"></div>';
+        C.forEach(([wd, i]) => {
+          const x = document.createElement("button");
+          x.className = "card";
+          x.onclick = () => {
+            if (lock || x.classList.contains("up")) return;
+            x.classList.add("up");
+            x.textContent = wd;
+            if (!a) { a = [x, i]; return; }
+            mv++;
+            hud(t("flips") + " " + mv);
+            const y = a[0];
+            if (a[1] == i) {
+              a = null;
+              x.classList.add("ok");
+              y.classList.add("ok");
+              if (++done == PAIRS) tm(() => end(Math.max(10, 300 - mv * 8)), 500);
+            } else {
+              a = null;
+              lock = 1;
+              tm(() => { x.className = y.className = "card"; x.textContent = y.textContent = ""; lock = 0; }, 800);
+            }
+          };
+          b.firstChild.append(x);
+        });
+      }
+
+      /* ---------- Agni ---------- */
+      function spark(b) {
+        let sc = 0;
+        b.innerHTML = '<div class="arena h-72"></div>';
+        const ar = b.firstChild;
+        clock(30, () => end(sc));
+        iv(() => {
+          const s = document.createElement("button");
+          s.className = "spark"; const k = R(5); s.textContent = EMO[k]; s.style.background = "var(" + ELV[k] + ")"; s.style.boxShadow = "0 0 18px 6px var(" + ELV[k] + ")";
+          s.setAttribute("aria-label", "Spark");
+          s.style.left = R(85) + "%";
+          s.style.top = R(80) + "%";
+          let hit = 0;
+          s.onclick = () => {
+            hit = 1;
+            sc += 10;
+            hud(t("score") + " " + sc);
+            s.remove();
+          };
+          ar.append(s);
+          tm(() => {
+            if (!hit && s.isConnected) {
+              sc = Math.max(0, sc - 3);
+              hud(t("score") + " " + sc);
+            }
+            s.remove();
+          }, 900);
+        }, 650);
+      }
+      const logG = () => {
+        const L = sh(t("pr").map((p) => p[0])).slice(0, 4),
+          k = R(4),
+          w = t("ws")[k];
+        const c = sh(
+          [0, 1, 2].map((i) =>
+            R(2) ? t("tl", L[i], L[i + 1]) : t("sl", L[i], L[i + 1]),
+          ),
+        ).join(" ");
+        return [c + "<br><b>" + t("who", w) + "</b>", sh(L.slice()), L[k]];
+      };
+
+      /* ---------- Vayu ---------- */
+      function echo(b) {
+        let sq = [],
+          ix = 0,
+          lock = 1,
+          sc = 0;
+        b.innerHTML = '<div class="flex flex-wrap justify-center gap-3 w-72 max-w-full mx-auto"></div>';
+        const pads = [0, 1, 2, 3, 4].map((i) => {
+            const p = document.createElement("button");
+            p.className = "pad p" + i;
+            p.setAttribute("aria-label", t("pr")[i][0]); p.textContent = EMO[i]; p.style.width = "88px";
+            p.onclick = () => tap(i);
+            b.firstChild.append(p);
+            return p;
+          }),
+          fl = (i) => {
+            pads[i].classList.add("on"); beep(1, [262, 330, 392, 494, 587][i]);
+            tm(() => pads[i].classList.remove("on"), 350);
+          };
+        function play() {
+          lock = 1;
+          sq.push(R(5));
+          ix = 0;
+          hud(t("round") + " " + sq.length + ", " + t("score") + " " + sc);
+          sq.forEach((v, k) => tm(() => fl(v), 600 + k * 650));
+          tm(() => (lock = 0), 600 + sq.length * 650);
+        }
+        function tap(i) {
+          if (lock) return;
+          fl(i);
+          if (i != sq[ix]) return end(sc);
+          if (++ix == sq.length) {
+            sc = sq.length * 10;
+            lock = 1;
+            tm(play, 800);
+          }
+        }
+        play();
+      }
+      const O =
+          "Earth,Water,Fire,Moon|Moon;2,3,5,9|9;Nose,Tongue,Eye,Hand|Hand;Smell,Taste,Sight,Walking|Walking;Mango,Apple,Carrot,Banana|Carrot;Triangle,Square,Circle,Cube|Cube;16,25,36,40|40;Sun,Star,Lamp,Rock|Rock;Ocean,River,Lake,Desert|Desert;Eagle,Kite,Sparrow,Whale|Whale;Sound,Touch,Taste,Stone|Stone;Mon,Wed,Fri,June|June;Rice,Wheat,Millet,Iron|Iron".split(
+            ";",
+          ),
+        oddG = () => {
+          const p = sh(O.slice());
+          return () => {
+            const [l, a] = p.pop().split("|");
+            return [t("odd"), sh(l.split(",")), a];
+          };
+        };
+
+      /* ---------- Akasha ---------- */
+      function stars(b) {
+        let r = 0,
+          sc = 0;
+        const nx = () => {
+          if (r++ >= 8) return end(sc);
+          const n = Math.min(40, 6 + R(8 + r * 3)),
+            c = sh([...Array(48).keys()]).slice(0, n);
+          hud(t("rof", r, 8) + ", " + t("score") + " " + sc);
+          b.innerHTML =
+            '<div class="arena h-72">' +
+            c
+              .map(
+                (x) =>
+                  `<i class="star" style="left:${(x % 8) * 12 + 2}%;top:${((x / 8) | 0) * 15 + 2}%"></i>`,
+              )
+              .join("") +
+            '</div><p class="mt-3">' +
+            t("cnt2") +
+            "</p>";
+          tm(
+            () =>
+              mc(b, t("cnt"), opts(n), n, (ok) => {
+                if (ok) sc += 12;
+                nx();
+              }),
+            700 + n * 40,
+          );
+        };
+        nx();
+      }
+      const W = [
+        "EARTH",
+        "WATER",
+        "FLAME",
+        "SPACE",
+        "SOUND",
+        "SMELL",
+        "TASTE",
+        "TOUCH",
+        "BREATH",
+        "CLOUD",
+        "RIVER",
+        "STONE",
+        "LIGHT",
+        "ENERGY",
+        "OCEAN",
+        "SPARK",
+        "THUNDER",
+        "MOUNTAIN",
+      ];
+      function scr(b) {
+        let sc = 0,
+          w,
+          p = sh(W.slice());
+        clock(60, () => end(sc));
+        b.innerHTML =
+          '<p id="sw" class="f text-5xl tracking-widest my-5"></p><input id="si" class="inp text-center w-52" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Unscrambled word"><div class="mt-3"><button id="sb" class="btn2">' +
+          t("okb") +
+          '</button> <button id="sk" class="btn2">' +
+          t("skip") +
+          "</button></div>";
+        const si = $("#si"),
+          nx = () => {
+            w = p.pop() || (p = sh(W.slice())).pop();
+            let s;
+            do s = sh(w.split("")).join("");
+            while (s == w);
+            $("#sw").textContent = s;
+            si.value = "";
+            si.focus();
+          };
+        const sub = () => {
+          if (si.value.trim().toUpperCase() == w) {
+            sc += 15;
+            hud(t("score") + " " + sc);
+            nx();
+          } else {
+            si.classList.add("shake");
+            tm(() => si.classList.remove("shake"), 300);
+          }
+        };
+        si.onkeydown = (e) => { if (e.key == "Enter") { e.preventDefault(); sub(); } };
+        $("#sb").onclick = sub;
+        $("#sk").onclick = nx;
+        nx();
+      }
+
+      /* ---------- catalogue ---------- */
+      const E = {
+        prithvi: ["पृथ्वी", "Earth", "Memory and patience"],
+        jala: ["जल", "Water", "Flow and calculation"],
+        agni: ["अग्नि", "Fire", "Reflex and reasoning"],
+        vayu: ["वायु", "Air", "Attention and sequence"],
+        akasha: ["आकाश", "Space", "Perception and language"],
+      };
+      const G = [];
+
+
+      /* ---------- ten more games ---------- */
+      let rid = 0;
+      const later = (f, ms) => { const r = rid; tm(() => { if (live && r == rid) f(); }, ms); };
+      Object.assign(T.en, { okb: "OK", bw: "Type it backwards", mem7: "Memorise these", notshown: "Which one was NOT shown?", bigger: "Which is larger?", ink: "Pick the colour of the ink, not the word.", tr: "True", fa: "False", cn: { Red: "Red", Blue: "Blue", Green: "Green", Purple: "Purple" } });
+      Object.assign(T.hi, { okb: "ठीक", bw: "इसे उल्टा लिखें", mem7: "इन्हें याद करें", notshown: "कौन-सा नहीं दिखाया गया था?", bigger: "कौन-सा बड़ा है?", ink: "स्याही का रंग चुनें, शब्द का नहीं।", tr: "सही", fa: "गलत", cn: { Red: "लाल", Blue: "नीला", Green: "हरा", Purple: "बैंगनी" } });
+      Object.assign(T.ta, { okb: "சரி", bw: "திருப்பி எழுதுங்கள்", mem7: "இவற்றை நினைவில் வையுங்கள்", notshown: "எது காட்டப்படவில்லை?", bigger: "எது பெரியது?", ink: "சொல்லை அல்ல, மையின் நிறத்தைத் தேர்க.", tr: "சரி", fa: "தவறு", cn: { Red: "சிவப்பு", Blue: "நீலம்", Green: "பச்சை", Purple: "ஊதா" } });
+      Object.assign(T.hi.g, { pop:["धरती पॉप","चमकती टाइल को जलते ही दबाएँ। गलत दबाने पर -2। 30 सेकंड।"], rem:["लुप्त प्रतीक","सात प्रतीकों को तीन सेकंड याद करें, फिर वह चुनें जो नहीं दिखा था। 8 राउंड।"], cmp:["बड़ा प्रवाह","दो गणनाओं की तुलना करें और बड़ा मान चुनें। 45 सेकंड। सही पर 10 अंक।"], lad:["नदी की सीढ़ी","चरणों की कड़ी को मन में हल करें और अंतिम संख्या चुनें। 60 सेकंड।"], col:["रंग ज्वाला","शब्द और उसकी स्याही का रंग अलग हैं। स्याही का रंग चुनें। 40 सेकंड।"], tru:["सत्य अग्नि","क्या गुणा सही है? जल्दी तय करें। 40 सेकंड।"], rev:["उल्टी बयार","एक संख्या पल भर चमकती है। उसे उल्टा लिखें। सफल होने पर वह बढ़ती है। 60 सेकंड।"], ord:["आँधी क्रम","बिखरी संख्याओं को 1 से 9 तक क्रम में दबाएँ। 45 सेकंड।"], sid:["आकाश खोजी","अलग दिखने वाला एकमात्र प्रतीक ढूँढें। अंक बढ़ने पर ग्रिड बढ़ता है। 45 सेकंड।"], ana:["शब्द सादृश्य","शब्दों का संबंध पूरा करें। 60 सेकंड।"] });
+      Object.assign(T.ta.g, { pop:["நிலம் பாப்","ஒளிரும் கல் ஒளிர்ந்தவுடன் தட்டுங்கள். தவறான தட்டுக்கு -2. 30 வினாடிகள்."], rem:["மறைந்த சின்னம்","ஏழு சின்னங்களை மூன்று வினாடிகள் நினைவில் வைத்து, காட்டப்படாததைக் கண்டுபிடியுங்கள். 8 சுற்றுகள்."], cmp:["பெரிய ஓட்டம்","இரண்டு கணக்குகளை ஒப்பிட்டுப் பெரிய மதிப்பைத் தேர்க. 45 வினாடிகள். சரிக்கு 10."], lad:["நதி ஏணி","படிகளின் சங்கிலியை மனதில் தீர்த்து இறுதி எண்ணைத் தேர்க. 60 வினாடிகள்."], col:["வண்ணத் தீ","சொல்லும் மையின் நிறமும் வேறுபடும். மையின் நிறத்தைத் தேர்க. 40 வினாடிகள்."], tru:["உண்மைத் தீ","பெருக்கல் சரியா? விரைவாக முடிவு செய்யுங்கள். 40 வினாடிகள்."], rev:["பின்னோக்கிக் காற்று","ஒரு எண் சில கணம் மின்னும். அதைத் திருப்பி எழுதுங்கள். வெற்றி பெற்றால் நீளும். 60 வினாடிகள்."], ord:["புயல் வரிசை","சிதறிய எண்களை 1 முதல் 9 வரை வரிசையாகத் தட்டுங்கள். 45 வினாடிகள்."], sid:["வான் தேடல்","வேறுபட்ட ஒரே குறியீட்டைக் கண்டுபிடியுங்கள். மதிப்பெண் கூடினால் கட்டம் பெரிதாகும். 45 வினாடிகள்."], ana:["சொல் ஒப்புமை","சொல் உறவை நிறைவு செய்யுங்கள். 60 வினாடிகள்."] });
+      const sc_ = (v) => hud(t("score") + " " + v);
+
+      // Agni: Colour Flame (Stroop) and Truth Fire
+      const CC = { Red:"#d92d20", Blue:"#2563eb", Green:"#16a34a", Purple:"#7c3aed" },
+        colG = () => { const n = Object.keys(CC), w = n[R(4)], k = n[R(4)]; return [`<span class="f text-6xl" style="color:${CC[k]}">${t("cn")[w].toUpperCase()}</span><br><small>${t("ink")}</small>`, sh(n.map((x) => t("cn")[x])), t("cn")[k]]; },
+        truG = () => { const a = 2 + R(11), c = 2 + R(11), ok = R(2), v = ok ? a * c : a * c + [-2, -1, 1, 2, 10][R(5)]; return [`<span class="f text-5xl">${a} × ${c} = ${v}</span>`, [t("tr"), t("fa")], ok ? t("tr") : t("fa")]; };
+
+      // Jala: Bigger Flow and River Ladder
+      const ex = () => { const a = 3 + R(10), c = 3 + R(10), o = R(3); return o == 0 ? [a * c + " − " + c, a * c - c] : o == 1 ? [a + " × " + c, a * c] : [a + " + " + c + " + " + a, 2 * a + c]; },
+        cmpG = () => { let x, y; do { x = ex(); y = ex(); } while (x[1] == y[1] || x[0] == y[0]); return [t("bigger"), [x[0], y[0]], x[1] > y[1] ? x[0] : y[0]]; },
+        ladG = () => { let v = 2 + R(8), q = "" + v; for (let i = 0; i < 3; i++) { const o = R(3), n = 2 + R(5); if (o == 1 && v > n) { v -= n; q += " → −" + n; } else if (o == 2) { v *= 2; q += " → ×2"; } else { v += n; q += " → +" + n; } } return [`<span class="f text-3xl">${q} → ?</span>`, opts(v), v]; };
+
+      // Akasha: Shabda Analogy - links between element, sense, organ, bija sound, chakra and shape
+      const anaG = () => {
+        const A = ATTRS(), [kx, ky] = sh(["el", "sn", "og", "bj", "ck", "sh"]), X = A[kx], Y = A[ky], [i, j] = sh([0, 1, 2, 3, 4]), o = sh([0, 1, 2, 3, 4].filter((k) => k != j)).slice(0, 3).concat(j);
+        return [`<p class="mb-2">${t("anaq")}</p><div class="anl"><span>${esc(X[i])}</span><i>:</i><span>${esc(Y[i])}</span><i>::</i><span>${esc(X[j])}</span><i>:</i><span class="q">?</span></div>`, sh(o.map((k) => Y[k])), Y[j]];
+      };
+
+      // Vayu: Backward Breeze
+      function rev(b) {
+        let sc = 0, L = 3;
+        clock(60, () => end(sc));
+        const nx = () => {
+          const d = [...Array(L)].map(() => R(10)).join("");
+          b.innerHTML = `<p class="f text-6xl tracking-widest my-6">${d}</p>`;
+          later(() => {
+            b.innerHTML = '<p class="mb-3">' + t("bw") + '</p><input id="ri" class="inp text-center w-48" inputmode="numeric" enterkeyhint="done" autocomplete="off" aria-label="Reversed number"><div class="mt-3"><button id="rb" class="btn2">' + t("okb") + '</button></div>';
+            const i = $("#ri");
+            i.focus();
+            let sent = 0;
+            const sub = () => {
+              if (sent) return;
+              sent = 1;
+              if (i.value.trim() == d.split("").reverse().join("")) { sc += L * 5; L = Math.min(L + 1, 9); sc_(sc); nx(); }
+              else { sc = Math.max(0, sc - 5); L = Math.max(3, L - 1); sc_(sc); i.classList.add("shake"); later(nx, 400); }
+            };
+            i.onkeydown = (e) => { if (e.key == "Enter") { e.preventDefault(); sub(); } };
+            $("#rb").onclick = sub;
+          }, 900 + L * 450);
+        };
+        sc_(0);
+        nx();
+      }
+
+      // Vayu: Gale Order - see the five elements in an order, then tap them in that same order
+      function ord(b) {
+        let sc = 0, show = 3600;
+        clock(45, () => end(sc));
+        const nx = () => {
+          const q = sh([0, 1, 2, 3, 4]);
+          let n = 0;
+          b.innerHTML = `<p class="mb-3">${t("ordq")}</p><div class="flex items-center justify-center gap-2 flex-wrap">${q.map((e, i) => (i ? '<span style="color:var(--mut)">›</span>' : "") + `<span class="chp" style="--c:var(${ELV[e]})"><i>${EMO[e]}</i>${esc(t("pr")[e][0])}</span>`).join("")}</div>`;
+          later(() => {
+            b.innerHTML = `<p class="mb-2">${t("ordt")}</p><div class="arena" style="height:300px"></div><div class="dots mt-3">${q.map(() => "<i></i>").join("")}</div>`;
+            const a = b.querySelector(".arena"), dots = b.querySelectorAll(".dots i"), pos = [];
+            sh(q.slice()).forEach((e) => {
+              const x = document.createElement("button");
+              x.className = "bub";
+              x.textContent = EMO[e];
+              x.setAttribute("aria-label", t("pr")[e][0]);
+              x.style.setProperty("--bc", "var(" + ELV[e] + ")");
+              let p, k = 0;
+              do { p = [R(76), R(72)]; k++; } while (k < 80 && pos.some((r) => Math.abs(r[0] - p[0]) < 22 && Math.abs(r[1] - p[1]) < 22));
+              pos.push(p);
+              x.style.left = p[0] + "%";
+              x.style.top = p[1] + "%";
+              x.onclick = () => {
+                if (e == q[n]) {
+                  beep(1, 380 + n * 90); x.classList.add("gone"); x.disabled = 1; dots[n].classList.add("on");
+                  if (++n == 5) { sc += 20; sc_(sc); show = Math.max(2000, show - 300); later(nx, 450); }
+                } else { beep(0); sc = Math.max(0, sc - 5); sc_(sc); a.classList.add("shake"); tm(() => a.classList.remove("shake"), 300); }
+              };
+              a.append(x);
+            });
+          }, show);
+        };
+        sc_(0);
+        nx();
+      }
+
+      // Prithvi: Earth Pop
+      function pop(b) {
+        let sc = 0, on = -1, side = 0, Q = [];
+        const build = (n) => {
+          side = n;
+          b.innerHTML = '<div class="grid gap-2 mx-auto max-w-full g' + n + '" style="grid-template-columns:repeat(' + n + ',1fr);width:' + (n == 5 ? 22 : 25) + 'rem"></div>';
+          Q = [...Array(n * n)].map((_, i) => {
+            const x = document.createElement("button");
+            x.className = "tile";
+            x.setAttribute("aria-label", "Tile " + (i + 1));
+            x.onclick = () => { sc = Math.max(0, sc + (i == on ? 5 : -2)); if (i == on) { x.classList.remove("lit"); on = -1; } sc_(sc); };
+            b.firstChild.append(x);
+            return x;
+          });
+        };
+        clock(30, () => end(sc));
+        build(5);
+        const loop = () => {
+          const n = sc >= 30 ? 6 : 5;
+          if (n != side) { build(n); on = -1; }
+          Q.forEach((x) => x.classList.remove("lit"));
+          on = R(side * side); Q[on].classList.add("lit");
+          tm(loop, Math.max(420, 680 - sc * 3));
+        };
+        loop();
+        sc_(0);
+      }
+
+      // Prithvi: Missing Charm
+      const EM = ["🌍","💧","🔥","🌪️","🌌","👃","👅","👁️","🤚","👂"];
+      function rem(b) {
+        let sc = 0, r = 0;
+        const nx = () => {
+          if (r++ >= 8) return end(sc);
+          const q = sh(EM.slice()), a = q[7];
+          b.innerHTML = '<p class="mb-3">' + t("mem7") + '</p><p class="text-5xl leading-snug">' + q.slice(0, 7).join(" ") + "</p>";
+          later(() => mc(b, t("notshown"), sh([a, q[0], q[1], q[2]]), a, (ok) => { sc += ok ? 15 : 0; hud(t("score") + " " + sc + ", " + t("rof", r, 8)); nx(); }), 3200);
+        };
+        nx();
+      }
+
+      // Akasha: Sky Spotter - read the element clue, find its sense organ among look-alikes
+      function sid(b) {
+        let sc = 0, n = 3, hits = 0;
+        clock(45, () => end(sc));
+        const nx = () => {
+          const e = R(5), o = R(n * n), pool = [0, 1, 2, 3, 4].filter((x) => x != e);
+          b.innerHTML = `<p class="mb-3 text-lg">${t("sidq", EN(e))}</p><div class="grid gap-1 mx-auto max-w-full f text-3xl" style="grid-template-columns:repeat(${n},1fr);width:${Math.min(25, 11 + n * 2)}rem"></div>`;
+          for (let i = 0; i < n * n; i++) {
+            const c = document.createElement("button");
+            c.className = "opt !p-1";
+            c.textContent = SEN[i == o ? e : pool[R(4)]];
+            c.onclick = () => { if (i == o) { sc += 10; if (++hits % 3 == 0) n = Math.min(7, n + 1); } else sc = Math.max(0, sc - 5); sc_(sc); nx(); };
+            b.lastChild.append(c);
+          }
+        };
+        sc_(0);
+        nx();
+      }
+
+      const EMO = ["🌍", "💧", "🔥", "🌪️", "🌌"], SEN = ["👃", "👅", "👁️", "🤚", "👂"], ELV = ["--prithvi", "--jala", "--agni", "--vayu", "--akasha"];
+
+      /* Panchabhuta attribute table: sense, organ, bija sound, chakra and yantra shape of each element */
+      const PX = {
+        en: { bj: ["LAM", "VAM", "RAM", "YAM", "HAM"], ck: ["Muladhara", "Svadhisthana", "Manipura", "Anahata", "Vishuddha"], sh: ["⬛ Square", "🌙 Crescent", "🔺 Triangle", "⬡ Hexagon", "⚪ Circle"] },
+        hi: { bj: ["लं", "वं", "रं", "यं", "हं"], ck: ["मूलाधार", "स्वाधिष्ठान", "मणिपूर", "अनाहत", "विशुद्ध"], sh: ["⬛ वर्ग", "🌙 अर्धचंद्र", "🔺 त्रिकोण", "⬡ षट्कोण", "⚪ वृत्त"] },
+        ta: { bj: ["லம்", "வம்", "ரம்", "யம்", "ஹம்"], ck: ["மூலாதாரம்", "சுவாதிஷ்டானம்", "மணிப்பூரகம்", "அனாகதம்", "விசுத்தி"], sh: ["⬛ சதுரம்", "🌙 பிறை", "🔺 முக்கோணம்", "⬡ அறுகோணம்", "⚪ வட்டம்"] },
+      };
+      const ATTRS = () => {
+        const p = PX[LG] || PX.en;
+        return { el: [0, 1, 2, 3, 4].map((i) => EMO[i] + " " + t("pr")[i][0]), sn: t("pr").map((x) => x[1]), og: t("og"), bj: p.bj, ck: p.ck, sh: p.sh };
+      };
+
+      /* ===== ten more games, each on the five elements ===== */
+      const LEG = () => '<span class="leg">' + EMO.map((e, i) => `<span>${e}<b>${VAL[i]}</b></span>`).join("") + "</span>",
+        EN = (i) => EMO[i] + " " + t("pr")[i][0],
+        sam = (n, a) => sh([0, 1, 2, 3, 4].filter((x) => x != a)).slice(0, n);
+      /* Prithvi: Seed Sequence - which element comes next (steps follow the order of creation: Space, Air, Fire, Water, Earth) */
+      const seqE = () => {
+        const ORD = [4, 3, 2, 1, 0], ty = R(3), a = R(5), d = 1 + R(4), p = sh([0, 1, 2, 3, 4]);
+        const s = [0, 1, 2, 3, 4].map((i) => (ty == 0 ? ORD[(a + d * i) % 5] : p[i % (ty + 1)]));
+        return [t("nextel") + '<br><b class="f text-3xl">' + s.slice(0, 4).map((x) => EMO[x]).join("  ") + "  ?</b>", sh(sam(3, s[4]).concat(s[4]).map(EN)), EN(s[4])];
+      };
+      /* Prithvi: Earth Pop - tap the glowing element tile */
+      function popE(b) {
+        let sc = 0, on = -1, side = 0, Q = [];
+        const build = (n) => {
+          side = n;
+          b.innerHTML = '<div class="grid gap-2 mx-auto max-w-full g' + n + '" style="grid-template-columns:repeat(' + n + ',1fr);width:' + (n == 5 ? 22 : 25) + 'rem"></div>';
+          Q = [...Array(n * n)].map((_, i) => {
+            const x = document.createElement("button");
+            x.className = "tile";
+            x.setAttribute("aria-label", "Tile " + (i + 1));
+            x.onclick = () => { if (i == on) { sc += 5; x.classList.remove("lit"); x.textContent = ""; on = -1; beep(1); } else { sc = Math.max(0, sc - 2); beep(0); } sc_(sc); };
+            b.firstChild.append(x);
+            return x;
+          });
+        };
+        clock(30, () => end(sc));
+        build(5);
+        const loop = () => {
+          const n = sc >= 30 ? 6 : 5;
+          if (n != side) build(n);
+          Q.forEach((x) => { x.classList.remove("lit"); x.textContent = ""; });
+          on = R(side * side); const k = R(5);
+          Q[on].classList.add("lit"); Q[on].textContent = EMO[k]; Q[on].style.setProperty("--lc", "var(" + ELV[k] + ")");
+          tm(loop, Math.max(420, 680 - sc * 3));
+        };
+        loop();
+        sc_(0);
+      }
+      /* Jala: Bigger Flow and River Ladder - element values */
+      const exE = () => { const i = R(5), j = R(5), k = R(5), o = R(3); return o == 0 ? [EMO[i] + " × " + EMO[j], VAL[i] * VAL[j]] : o == 1 ? [EMO[i] + " + " + EMO[j] + " + " + EMO[k], VAL[i] + VAL[j] + VAL[k]] : [EMO[i] + " × " + EMO[j] + " + " + EMO[k], VAL[i] * VAL[j] + VAL[k]]; },
+        cmpE = () => { let x, y; do { x = exE(); y = exE(); } while (x[1] == y[1] || x[0] == y[0]); return [LEG() + "<br>" + t("bigger"), [x[0], y[0]], x[1] > y[1] ? x[0] : y[0]]; },
+        ladE = () => { const i = R(5); let v = VAL[i], q = EMO[i]; for (let n = 0; n < 3; n++) { const k = R(5), o = R(3); if (o == 1 && v > VAL[k]) { v -= VAL[k]; q += " → −" + EMO[k]; } else if (o == 2) { const e = 2 + R(2); v *= VAL[e]; q += " → ×" + EMO[e]; } else { v += VAL[k]; q += " → +" + EMO[k]; } } return [LEG() + `<br><span class="f text-3xl">${q} → ?</span>`, opts(v), v]; };
+      /* Agni: Colour Flame (each element has its own colour) and Truth Fire */
+      const colE = () => {
+        const w = R(5), k = sam(1, w)[0], o = sh([0, 1, 2, 3, 4].filter((x) => x != k && x != w)).slice(0, 2).concat(k, w);
+        return [`<span class="f text-6xl" style="color:var(${ELV[k]})">${esc(t("pr")[w][0]).toUpperCase()}</span><br><small>${t("ink2")}</small><br><span class="leg">${EMO.map((e, i) => `<span style="color:var(${ELV[i]})">●<b style="color:var(--ink)">${esc(t("pr")[i][0])}</b></span>`).join("")}</span>`, sh(o.map((x) => t("pr")[x][0])), t("pr")[k][0]];
+      },
+        truE = () => { const i = R(5), j = R(5), ok = R(2), m = R(2), v = m ? VAL[i] * VAL[j] : VAL[i] + VAL[j], w = ok ? v : v + [-2, -1, 1, 2][R(4)]; return [LEG() + `<br><span class="f text-4xl">${EMO[i]} ${m ? "×" : "+"} ${EMO[j]} = ${w}</span>`, [t("tr"), t("fa")], ok ? t("tr") : t("fa")]; };
+      /* Vayu: Odd One Out (elements, senses, organs) */
+      const oddE = () => {
+        const A = ATTRS(), K = ["sn", "og", "bj", "ck", "sh"], e = R(5), f = sam(1, e)[0], good = sh(K.slice()).slice(0, 3).map((k) => A[k][e]), bad = A[K[R(5)]][f];
+        return [t("oddn", EN(e)), sh(good.concat(bad)), bad];
+      };
+      /* Vayu: Backward Breeze - elements flash, tap them back in reverse */
+      function revE(b) {
+        let sc = 0, L = 3;
+        clock(60, () => end(sc));
+        const nx = () => {
+          const s = [...Array(L)].map(() => R(5));
+          b.innerHTML = `<p class="mb-3">${t("ordq")}</p><p class="text-5xl my-4" style="letter-spacing:.15em">${s.map((x) => EMO[x]).join(" ")}</p>`;
+          later(() => {
+            const got = [];
+            let done = 0;
+            b.innerHTML = `<p class="mb-2">${t("revt")}</p><p id="rvo" class="text-4xl my-3" style="min-height:2.8rem"></p><div id="rvb" class="flex justify-center gap-2 flex-wrap"></div><div class="mt-3"><button id="rvx" class="btn2" aria-label="Undo">⌫</button></div>`;
+            const show = () => ($("#rvo").textContent = got.map((x) => EMO[x]).join(" "));
+            [0, 1, 2, 3, 4].forEach((e) => {
+              const x = document.createElement("button");
+              x.className = "opt";
+              x.style.cssText = "width:58px;font-size:1.6rem;padding:.4rem 0";
+              x.textContent = EMO[e];
+              x.setAttribute("aria-label", t("pr")[e][0]);
+              x.onclick = () => {
+                if (done) return;
+                beep(1, 300 + e * 70);
+                got.push(e);
+                show();
+                if (got.length < L) return;
+                done = 1;
+                const ok = got.join() == s.slice().reverse().join();
+                if (ok) { sc += L * 5; L = Math.min(L + 1, 8); } else { sc = Math.max(0, sc - 5); L = Math.max(3, L - 1); $("#rvo").classList.add("shake"); }
+                sc_(sc);
+                later(nx, ok ? 300 : 800);
+              };
+              $("#rvb").append(x);
+            });
+            $("#rvx").onclick = () => { if (!done) { got.pop(); show(); } };
+          }, 900 + L * 600);
+        };
+        sc_(0);
+        nx();
+      }
+      /* Akasha: Star Count - count one element among the flashing ones */
+      function starE(b) {
+        let r = 0, sc = 0;
+        const nx = () => {
+          if (r++ >= 8) return end(sc);
+          const n = Math.min(40, 8 + R(6 + r * 3)), T0 = R(5), c = sh([...Array(48).keys()]).slice(0, n), el = c.map((_, i) => (i < 2 ? T0 : R(5))), cnt = el.filter((x) => x == T0).length;
+          hud(t("rof", r, 8) + ", " + t("score") + " " + sc);
+          b.innerHTML = '<div class="arena h-72">' + c.map((x, i) => `<i class="em" style="left:${(x % 8) * 12 + 2}%;top:${((x / 8) | 0) * 15 + 2}%">${EMO[el[i]]}</i>`).join("") + '</div><p class="mt-3">' + t("cnt4", EN(T0)) + "</p>";
+          tm(() => mc(b, t("cnt3", EN(T0)), opts(cnt), cnt, (ok) => { if (ok) sc += 12; nx(); }), 1000 + n * 45);
+        };
+        nx();
+      }
+      /* Akasha: Shabda Scramble - element words, with the element's emblem as a hint */
+      const WD = [["EARTH", "🌍"], ["PRITHVI", "🌍"], ["WATER", "💧"], ["JALA", "💧"], ["FLAME", "🔥"], ["AGNI", "🔥"], ["VAYU", "🌪️"], ["BREEZE", "🌪️"], ["SPACE", "🌌"], ["AKASHA", "🌌"], ["SMELL", "👃"], ["TASTE", "👅"], ["SIGHT", "👁️"], ["TOUCH", "🤚"], ["SOUND", "👂"], ["TATTVA", "✨"]];
+      function scrE(b) {
+        let sc = 0, w, p = sh(WD.slice());
+        clock(60, () => end(sc));
+        b.innerHTML = '<p id="scw" class="f text-5xl tracking-widest my-5"></p><input id="sci" class="inp text-center w-52" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Unscrambled word"><div class="mt-3"><button id="scb" class="btn2">' + t("okb") + '</button> <button id="sck" class="btn2">' + t("skip") + "</button></div>";
+        const si = $("#sci"),
+          nx = () => {
+            const x = p.pop() || (p = sh(WD.slice())).pop();
+            w = x[0];
+            let s;
+            do s = sh(w.split("")).join("");
+            while (s == w);
+            $("#scw").innerHTML = `<span class="text-4xl">${x[1]}</span><br>${s}`;
+            si.value = "";
+            si.focus();
+          },
+          sub = () => {
+            if (si.value.trim().toUpperCase() == w) { sc += 15; sc_(sc); beep(1); nx(); }
+            else { beep(0); si.classList.add("shake"); tm(() => si.classList.remove("shake"), 300); si.select(); }
+          };
+        si.onkeydown = (e) => { if (e.key == "Enter") { e.preventDefault(); sub(); } };
+        $("#scb").onclick = sub;
+        $("#sck").onclick = nx;
+        nx();
+      }
+      Object.assign(T.en, { oddn: "Which one does NOT belong to {0}?", sidq: "Tap the sense organ that belongs to {0}", anaq: "Complete the analogy" });
+      Object.assign(T.hi, { oddn: "इनमें से कौन {0} से संबंधित नहीं है?", sidq: "{0} से जुड़ी ज्ञानेंद्रिय को दबाएँ", anaq: "सादृश्य पूरा करें" });
+      Object.assign(T.ta, { oddn: "இவற்றில் எது {0}-உடன் தொடர்பற்றது?", sidq: "{0}-உடன் தொடர்புடைய புலன் உறுப்பைத் தட்டுங்கள்", anaq: "ஒப்புமையை நிறைவு செய்க" });
+      Object.assign(T.en, { nextel: "Which element comes next?", ink2: "Which element's colour is the ink? Ignore the word.", cnt3: "How many {0} did you see?", cnt4: "Count the {0} before they vanish.", revt: "Now tap them in reverse order" });
+      Object.assign(T.hi, { nextel: "अगला तत्व कौन-सा है?", ink2: "स्याही किस तत्व का रंग है? शब्द को अनदेखा करें।", cnt3: "आपने {0} कितने देखे?", cnt4: "गायब होने से पहले {0} गिनें।", revt: "अब उन्हें उल्टे क्रम में दबाएँ" });
+      Object.assign(T.ta, { nextel: "அடுத்த பூதம் எது?", ink2: "மை எந்தப் பூதத்தின் நிறம்? சொல்லைப் புறக்கணியுங்கள்.", cnt3: "{0} எத்தனை பார்த்தீர்கள்?", cnt4: "{0}-ஐ மறைவதற்குள் எண்ணுங்கள்.", revt: "இப்போது தலைகீழ் வரிசையில் தட்டுங்கள்" });
+      Object.assign(T.hi.g, {
+        seq: ["बीज अनुक्रम", "तत्वों का क्रम पहचानकर अगला तत्व चुनें। 60 सेकंड। सही पर 10, गलत पर -5।"],
+        pop: ["धरती पॉप", "चमकती तत्व-टाइल को जलते ही दबाएँ। गलत दबाने पर -2। 30 सेकंड।"],
+        cmp: ["बड़ा प्रवाह", "दो तत्व-गणनाओं की तुलना करें और बड़ा मान चुनें। 45 सेकंड। सही पर 10 अंक।"],
+        lad: ["नदी की सीढ़ी", "तत्वों के मान से चरणों की कड़ी मन में हल करें और अंतिम संख्या चुनें। 60 सेकंड।"],
+        col: ["रंग ज्वाला", "शब्द और स्याही का रंग अलग हैं। स्याही जिस तत्व का रंग है, वह चुनें। 40 सेकंड।"],
+        tru: ["सत्य अग्नि", "क्या तत्व-समीकरण सही है? जल्दी तय करें। 40 सेकंड।"],
+        odd: ["बेमेल पहचान", "तत्व, इंद्रिय और अंग में से बेमेल चुनें। 10 प्रश्न, 45 सेकंड।"],
+        rev: ["उल्टी बयार", "तत्वों का क्रम पल भर चमकता है। उन्हें उल्टे क्रम में दबाएँ। सफल होने पर क्रम बढ़ता है। 60 सेकंड।"],
+        str: ["तत्व गिनती", "तत्व पल भर चमकते हैं। बताए गए तत्व को गिनकर संख्या चुनें। 8 राउंड।"],
+        scr: ["शब्द पहेली", "तत्वों की दुनिया के अंग्रेज़ी शब्दों के अक्षर सही क्रम में लगाएँ। 60 सेकंड।"],
+      });
+      Object.assign(T.ta.g, {
+        seq: ["விதை வரிசை", "பூதங்களின் வடிவத்தைக் கண்டு அடுத்த பூதத்தைத் தேர்க. 60 வினாடிகள். சரிக்கு 10, தவறுக்கு -5."],
+        pop: ["நிலம் பாப்", "ஒளிரும் பூதக் கல் ஒளிர்ந்தவுடன் தட்டுங்கள். தவறான தட்டுக்கு -2. 30 வினாடிகள்."],
+        cmp: ["பெரிய ஓட்டம்", "இரண்டு பூதக் கணக்குகளை ஒப்பிட்டுப் பெரிய மதிப்பைத் தேர்க. 45 வினாடிகள். சரிக்கு 10."],
+        lad: ["நதி ஏணி", "பூத மதிப்புகளால் படிகளின் சங்கிலியை மனதில் தீர்த்து இறுதி எண்ணைத் தேர்க. 60 வினாடிகள்."],
+        col: ["வண்ணத் தீ", "சொல்லும் மையின் நிறமும் வேறுபடும். மை எந்தப் பூதத்தின் நிறமோ அதைத் தேர்க. 40 வினாடிகள்."],
+        tru: ["உண்மைத் தீ", "பூதச் சமன்பாடு சரியா? விரைவாக முடிவு செய்யுங்கள். 40 வினாடிகள்."],
+        odd: ["வேறுபட்டதைக் கண்டுபிடி", "பூதம், புலன், உறுப்பில் சேராததைத் தேர்க. 45 வினாடிகளில் 10 கேள்விகள்."],
+        rev: ["பின்னோக்கிக் காற்று", "பூதங்களின் வரிசை சில கணம் தோன்றும். அவற்றைத் தலைகீழ் வரிசையில் தட்டுங்கள். வெற்றி பெற்றால் நீளும். 60 வினாடிகள்."],
+        str: ["பூத எண்ணிக்கை", "பூதங்கள் சில கணம் தோன்றும். கேட்கப்பட்ட பூதத்தை எண்ணி விடையைத் தேர்க. 8 சுற்றுகள்."],
+        scr: ["சொல் குழப்பம்", "பூதங்கள் தொடர்பான ஆங்கிலச் சொற்களின் எழுத்துகளை வரிசைப்படுத்துங்கள். 60 வினாடிகள்."],
+      });
+      G.push(
+        { id:"mem", e:"prithvi", n:"Stone Memory", d:"Watch the element stones light up, then tap them back. Each level adds a stone. Three mistakes end the run.", run:mem },
+        { id:"seq", e:"prithvi", n:"Seed Sequence", d:"Spot the pattern in the elements and pick the next one. 60 seconds. Right answers earn 10, wrong ones cost 5.", run:(b) => quiz(b, 60, seqE, 99, 10, 5) },
+        { id:"pop", e:"prithvi", n:"Earth Pop", d:"Tap the glowing element tile the moment it lights. Wrong taps cost 2. 30 seconds.", run:popE },
+        { id:"rem", e:"prithvi", n:"Missing Tattva", d:"Memorise seven elements and senses for three seconds, then spot the one that was not shown. 8 rounds.", run:rem },
+        { id:"mth", e:"jala", n:"Flow Math", d:"Every element has a value. Solve the element sums in 60 seconds. Type the answer and press Enter.", run:math },
+        { id:"mat", e:"jala", n:"Tattva Match", d:"Match each element with the sense it gives. Fewer flips mean a higher score.", run:match },
+        { id:"cmp", e:"jala", n:"Bigger Flow", d:"Compare two element sums and pick the larger value. 45 seconds. Right answers earn 10.", run:(b) => quiz(b, 45, cmpE, 99, 10, 5) },
+        { id:"lad", e:"jala", n:"River Ladder", d:"Follow the chain of element steps in your head and pick the final number. 60 seconds.", run:(b) => quiz(b, 60, ladE, 99, 15, 5) },
+        { id:"spk", e:"agni", n:"Spark Reflex", d:"Tap each element spark before it dies out. A missed spark costs 3 points. 30 seconds.", run:spark },
+        { id:"log", e:"agni", n:"Fire Logic", d:"Read the clues and rank the elements by strength. 10 puzzles in 90 seconds.", run:(b) => quiz(b, 90, logG, 10, 15, 5) },
+        { id:"col", e:"agni", n:"Colour Flame", d:"The word names one element but the ink shows another's colour. Pick the element the ink belongs to. 40 seconds.", run:(b) => quiz(b, 40, colE, 99, 10, 5) },
+        { id:"tru", e:"agni", n:"Truth Fire", d:"Is the element equation correct? Decide fast. 40 seconds.", run:(b) => quiz(b, 40, truE, 99, 10, 5) },
+        { id:"ech", e:"vayu", n:"Wind Echo", d:"Watch the five element pads flash and repeat the pattern. Each pad has its own note.", run:echo },
+        { id:"odd", e:"vayu", n:"Odd One Out", d:"Four clues, one intruder. Find the one that does not belong to the element: its sense, organ, bija sound, chakra or shape. 10 questions in 45 seconds.", run:(b) => quiz(b, 45, oddE, 10, 10, 0) },
+        { id:"rev", e:"vayu", n:"Backward Breeze", d:"Elements flash for a moment. Tap them back in reverse order. It grows as you succeed. 60 seconds.", run:revE },
+        { id:"ord", e:"vayu", n:"Gale Order", d:"Memorise the order of the five elements, then tap them in the same order as they scatter. 45 seconds.", run:ord },
+        { id:"str", e:"akasha", n:"Star Count", d:"Elements flash for a moment. Count the one you are asked about, then choose the number. 8 rounds.", run:starE },
+        { id:"scr", e:"akasha", n:"Shabda Scramble", d:"Unscramble words from the world of the elements. 60 seconds. Skip if stuck.", run:scrE },
+        { id:"sid", e:"akasha", n:"Sky Spotter", d:"Read the element clue, then spot its sense organ among the look-alikes. The grid grows as you score. 45 seconds.", run:sid },
+        { id:"ana", e:"akasha", n:"Shabda Analogy", d:"Complete the Panchabhuta analogy across elements, senses, organs, bija sounds, chakras and shapes. 60 seconds.", run:(b) => quiz(b, 60, anaG, 99, 10, 5) },
+      );
+      Object.assign(T.en, { valn: "Value = number of qualities the element holds.", ordq: "Memorise this order", ordt: "Tap the elements in the same order", og: ["Nose", "Tongue", "Eye", "Skin", "Ear"], tl: "{0} is stronger than {1}.", sl: "{1} is weaker than {0}.", who: "Which element is the {0}?", ws: ["strongest", "second strongest", "second weakest", "weakest"], sub: "Twenty mind games drawn from the five elements. Train memory, speed, logic and focus, then see how your class ranks." });
+      Object.assign(T.hi, { valn: "मान = तत्व में निहित गुणों की संख्या।", ordq: "यह क्रम याद करें", ordt: "तत्वों को उसी क्रम में दबाएँ", og: ["नाक", "जीभ", "आँख", "त्वचा", "कान"], tl: "{0}, {1} से अधिक शक्तिशाली है।", sl: "{1}, {0} से कमज़ोर है।", who: "कौन-सा तत्व {0} है?", ws: ["सबसे शक्तिशाली", "दूसरा सबसे शक्तिशाली", "दूसरा सबसे कमज़ोर", "सबसे कमज़ोर"], sub: "पाँच तत्वों पर आधारित बीस दिमागी खेल। याददाश्त, गति, तर्क और ध्यान को निखारें और देखें आपकी कक्षा कहाँ है।" });
+      Object.assign(T.ta, { valn: "மதிப்பு = அந்த பூதத்தில் உள்ள குணங்களின் எண்ணிக்கை.", ordq: "இந்த வரிசையை நினைவில் வையுங்கள்", ordt: "பூதங்களை அதே வரிசையில் தட்டுங்கள்", og: ["மூக்கு", "நாக்கு", "கண்", "தோல்", "காது"], tl: "{0}, {1}-ஐ விட வலிமையானது.", sl: "{1}, {0}-ஐ விடப் பலவீனமானது.", who: "{0} பூதம் எது?", ws: ["மிக வலிமையான", "இரண்டாவது வலிமையான", "இரண்டாவது பலவீனமான", "மிகப் பலவீனமான"], sub: "ஐந்து பூதங்களை அடிப்படையாகக் கொண்ட இருபது மூளை விளையாட்டுகள். நினைவு, வேகம், தர்க்கம், கவனத்தைப் பயிற்றுவித்து உங்கள் வகுப்பு எங்கே உள்ளது என்று பாருங்கள்." });
+      Object.assign(T.hi.g, {
+        mem: ["पत्थर स्मृति", "तत्वों के पत्थर जलते दिखेंगे, उन्हें याद करके वापस दबाएँ। हर स्तर पर एक बढ़ता है। तीन गलतियाँ और खेल खत्म।"],
+        rem: ["लुप्त तत्त्व", "सात तत्वों और इंद्रियों को तीन सेकंड याद करें, फिर वह चुनें जो नहीं दिखा था। 8 राउंड।"],
+        mth: ["प्रवाह गणित", "हर तत्व का एक मान है। तत्वों के जोड़, घटाव और गुणा हल करें। 60 सेकंड।"],
+        spk: ["चिंगारी रिफ्लेक्स", "तत्व की चिंगारी बुझने से पहले दबाएँ। चूकने पर -3 अंक। 30 सेकंड।"],
+        log: ["अग्नि तर्क", "सुराग पढ़कर तत्वों की शक्ति का क्रम बताएँ। 90 सेकंड में 10 पहेलियाँ।"],
+        ech: ["वायु प्रतिध्वनि", "पाँच तत्वों के चमकते पैड का क्रम दोहराएँ। हर पैड का अपना सुर है।"],
+        ord: ["आँधी क्रम", "पाँच तत्वों का क्रम याद करें, फिर बिखरे तत्वों को उसी क्रम में दबाएँ। 45 सेकंड।"],
+        sid: ["आकाश खोजी", "अलग दिखने वाला एकमात्र तत्व ढूँढें। अंक बढ़ने पर ग्रिड बढ़ता है। 45 सेकंड।"],
+        ana: ["शब्द सादृश्य", "तत्व, इंद्रिय और अंग का संबंध पूरा करें। 60 सेकंड।"],
+      });
+      Object.assign(T.ta.g, {
+        mem: ["கல் நினைவு", "பூதக் கற்கள் ஒளிர்வதைப் பார்த்து நினைவில் வைத்துத் தட்டுங்கள். ஒவ்வொரு நிலையிலும் ஒன்று கூடும். மூன்று தவறுகளில் முடிவு."],
+        rem: ["மறைந்த பூதம்", "ஏழு பூதங்கள், புலன்களை மூன்று வினாடிகள் நினைவில் வைத்து, காட்டப்படாததைக் கண்டுபிடியுங்கள். 8 சுற்றுகள்."],
+        mth: ["ஓட்டக் கணிதம்", "ஒவ்வொரு பூதத்துக்கும் ஒரு மதிப்பு உண்டு. பூதக் கணக்குகளைத் தீர்க்கவும். 60 வினாடிகள்."],
+        spk: ["தீப்பொறி வேகம்", "பூதத் தீப்பொறி மறையும் முன் தட்டுங்கள். தவறினால் -3. 30 வினாடிகள்."],
+        log: ["நெருப்புத் தர்க்கம்", "குறிப்புகளைப் படித்து பூதங்களின் வலிமை வரிசையைக் கண்டுபிடியுங்கள். 90 வினாடிகளில் 10 புதிர்கள்."],
+        ech: ["காற்றின் எதிரொலி", "ஐந்து பூதப் பலகைகளின் ஒளிர்வு வரிசையை மீண்டும் செய்யுங்கள். ஒவ்வொரு பலகைக்கும் தனி ஒலி உண்டு."],
+        ord: ["புயல் வரிசை", "ஐந்து பூதங்களின் வரிசையை நினைவில் வைத்து, சிதறியவற்றை அதே வரிசையில் தட்டுங்கள். 45 வினாடிகள்."],
+        sid: ["வான் தேடல்", "வேறுபட்ட ஒரே பூதத்தைக் கண்டுபிடியுங்கள். மதிப்பெண் கூடினால் கட்டம் பெரிதாகும். 45 வினாடிகள்."],
+        ana: ["சொல் ஒப்புமை", "பூதம், புலன், உறுப்பு உறவை நிறைவு செய்யுங்கள். 60 வினாடிகள்."],
+      });
+
+      /* ---------- game shell ---------- */
+      function openG(g) {
+        if (!P.n || !P.c) {
+          $("#msg").textContent = t("ent");
+          (P.n ? $("#ck") : $("#nm")).focus();
+          return;
+        }
+        $("#msg").textContent = "";
+        cur = g;
+        live = 1;
+        rid++;
+        $("#tb").style.width = "0";
+        $("#st > div").style.setProperty("--c", "var(--" + g.e + ")");
+        clr();
+        $("#st").classList.remove("hidden");
+        $("#gt").textContent = gi(g)[0];
+        $("#gd").textContent = gi(g)[1];
+        hud("");
+        $("#tm").textContent = "";
+        $("#box").innerHTML =
+          '<button class="btn" id="go">' + t("start") + "</button>";
+        $("#go").onclick = () => {
+          let n = 3;
+          const tick = () => {
+            if (!n) { $("#box").innerHTML = ""; return g.run($("#box")); }
+            $("#box").innerHTML = `<p class="f text-8xl my-8 cd">${n--}</p>`;
+            beep(1, 520);
+            later(tick, 700);
+          };
+          tick();
+        };
+        $("#go").focus();
+      }
+      function shut() {
+        live = 0;
+        clr();
+        $("#st").classList.add("hidden");
+        rend();
+      }
+      function end(s) {
+        if (!live) return;
+        live = 0;
+        clr();
+        s = Math.max(0, Math.round(s));
+        if (db) fbSave(cur.id, s);
+        else { S.push({ n: P.n, c: P.c, g: cur.id, s, t: Date.now() }); sv("pb", S); }
+        /* leaderboard now holds running totals, so keep the single-game personal best separately */
+        const PB = ld("pbb", {}),
+          pk = (P.n + "|" + P.c + "|" + cur.id).toLowerCase(),
+          prev = PB[pk] || 0,
+          best = Math.max(prev, s),
+          isPB = s > prev;
+        PB[pk] = best;
+        sv("pbb", PB);
+        $("#tm").textContent = "";
+        hud(t("fin"));
+        $("#box").innerHTML =
+          `<p class="f text-7xl my-4">${s}</p><p class="mb-5">${isPB ? t("pb") : t("best") + " " + best}</p><button class="btn" id="ag">${t("again")}</button> <button class="btn2" id="sl">${t("seelb")}</button>`;
+        if (isPB) boom();
+        $("#ag").onclick = () => openG(cur);
+        $("#sl").onclick = () => {
+          shut();
+          go("l");
+        };
+      }
+
+      /* ---------- leaderboard ---------- */
+      function lb() {
+        const g = $("#fg").value,
+          c = $("#fc").value,
+          mu = au && au.currentUser ? au.currentUser.uid : null,
+          me = (o) => (vw == "c" ? o.n == P.c : o.u ? o.u === mu : o.n == P.n && o.c == P.c);
+        const cs = [...new Set(S.map((r) => r.c).filter(Boolean))].sort(
+          (a, b) => a.localeCompare(b, undefined, { numeric: true }),
+        );
+        $("#fc").innerHTML =
+          '<option value="">' +
+          t("allc") +
+          "</option>" +
+          cs
+            .map(
+              (x) => `<option${x == c ? " selected" : ""}>${esc(x)}</option>`,
+            )
+            .join("");
+        $("#cap").textContent = vw == "c" ? t("capc") : t("capp");
+        const m = {};
+        S.forEach((r) => {
+          if (c && r.c != c) return;
+          const k = r.u || String(r.n).toLowerCase() + "|" + String(r.c).toLowerCase(),
+            o = (m[k] ??= { u: r.u, n: r.n, c: r.c, b: {} });
+          o.b[r.g] = (o.b[r.g] || 0) + r.s;
+        });
+        let rows = Object.values(m)
+          .map((o) => ({
+            u: o.u,
+            n: o.n,
+            c: o.c,
+            s:
+              g == "all"
+                ? Object.values(o.b).reduce((a, b) => a + b, 0)
+                : o.b[g],
+          }))
+          .filter((o) => o.s != null);
+        if (vw == "c") {
+          const q = {};
+          rows.forEach((o) => {
+            const k = o.c || t("nocl"),
+              z = (q[k] ??= { n: k, s: 0, k: 0 });
+            z.s += o.s;
+            z.k++;
+          });
+          rows = Object.values(q).map((o) => ({
+            n: o.n,
+            c: o.k + " " + t(o.k > 1 ? "sn" : "s1"),
+            s: Math.round(o.s / o.k),
+          }));
+        }
+        rows.sort((a, b) => b.s - a.s);
+        $("#lbt").innerHTML = rows.length
+          ? rows
+              .slice(0, 25)
+              .map(
+                (o, i) =>
+                  `<tr class="border-t${me(o) ? " me" : ""}" style="border-color:var(--ln)"><td class="w-12 f text-xl">${["🥇", "🥈", "🥉"][i] || i + 1}</td><td>${esc(o.n)}<span class="ml-2 text-sm" style="color:var(--mut)">${esc(o.c || "")}</span></td><td class="text-right font-bold">${Number(o.s) || 0}</td></tr>`,
+              )
+              .join("")
+          : '<tr><td class="py-6" style="color:var(--mut)">' +
+            t("none") +
+            "</td></tr>";
+      }
+
+      /* ---------- init ---------- */
+      Object.assign(T.hi.g, {
+        odd: ["बेमेल पहचान", "चार में से वह चुनें जो तत्व से संबंधित नहीं: उसकी इंद्रिय, अंग, बीज-ध्वनि, चक्र या आकार। 45 सेकंड में 10 प्रश्न।"],
+        sid: ["आकाश खोजी", "तत्व का संकेत पढ़ें और भीड़ में उसकी ज्ञानेंद्रिय खोजें। अंक बढ़ने पर ग्रिड बढ़ता है। 45 सेकंड।"],
+        ana: ["शब्द सादृश्य", "तत्व, इंद्रिय, अंग, बीज-ध्वनि, चक्र और आकार के बीच का संबंध पूरा करें। 60 सेकंड।"],
+      });
+      Object.assign(T.ta.g, {
+        odd: ["வேறுபட்டதைக் கண்டுபிடி", "நான்கில் அந்த பூதத்துடன் தொடர்பற்றதைத் தேர்க: அதன் புலன், உறுப்பு, பீஜ ஒலி, சக்கரம் அல்லது வடிவம். 45 வினாடிகளில் 10 கேள்விகள்."],
+        sid: ["வான் தேடல்", "பூதக் குறிப்பைப் படித்து, கூட்டத்தில் அதன் புலன் உறுப்பைக் கண்டுபிடியுங்கள். மதிப்பெண் கூடினால் கட்டம் பெரிதாகும். 45 வினாடிகள்."],
+        ana: ["சொல் ஒப்புமை", "பூதம், புலன், உறுப்பு, பீஜ ஒலி, சக்கரம், வடிவம் ஆகியவற்றின் உறவை நிறைவு செய்யுங்கள். 60 வினாடிகள்."],
+      });
+      const IC = { mem:"🌍", seq:"🌱", mth:"🌊", mat:"🃏", spk:"✨", log:"🔥", ech:"🌬️", odd:"🔍", str:"⭐", scr:"🔤", pop:"⛰️", rem:"🎯", cmp:"⚖️", lad:"📈", col:"🎨", tru:"✅", rev:"↩️", ord:"🌀", sid:"👁️", ana:"🔗" };
+      let FL = "all";
+      function rend() {
+        const mine = {};
+        const mu = au && au.currentUser ? au.currentUser.uid : null;
+        S.forEach((r) => { if (mu && r.u ? r.u === mu : r.n == P.n && r.c == P.c) mine[r.g] = (mine[r.g] || 0) + r.s; });
+        const tot = Object.values(mine).reduce((a, b) => a + b, 0);
+        $("#chips").innerHTML = ["all", ...Object.keys(E)].map((k) => `<button class="chip" data-k="${k}" aria-pressed="${FL == k}" style="--c:var(--${k == "all" ? "akasha" : k})">${k == "all" ? t("all") : t("e")[k][0]}</button>`).join("");
+        $("#chips").querySelectorAll("button").forEach((x) => (x.onclick = () => { FL = x.dataset.k; rend(); }));
+        $("#stats").innerHTML = `<span><b>${Object.keys(mine).length}/${G.length}</b> ${t("tried")}</span><span><b>${tot}</b> ${t("tot")}</span>`;
+        $("#gm").innerHTML = "";
+        Object.entries(E).forEach(([k, [dv]]) => {
+          if (FL != "all" && FL != k) return;
+          const [en, tag] = t("e")[k];
+          $("#gm").insertAdjacentHTML("beforeend", `<section><div class="eh" style="--c:var(--${k})"><i class="sp sp-${k}"></i><span class="f text-3xl">${dv}</span><b>${en}</b><span class="text-sm">${tag}</span></div><div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" id="r-${k}"></div></section>`);
+        });
+        G.forEach((g) => {
+          const c = $("#r-" + g.e);
+          if (!c) return;
+          const b = document.createElement("button");
+          b.className = "gc";
+          b.style.setProperty("--c", "var(--" + g.e + ")");
+          b.innerHTML = `<span class="ic">${IC[g.id]}</span>${mine[g.id] != null ? `<span class="bd">★ ${mine[g.id]}</span>` : ""}<span class="f text-2xl block mt-3">${esc(gi(g)[0])}</span><span class="text-sm block mt-1 clamp">${esc(gi(g)[1])}</span><span class="pl">${t("play")}</span>`;
+          b.onclick = () => openG(g);
+          c.append(b);
+        });
+      }
+      const th0 = ld("pbt", null);
+      if (th0) document.documentElement.dataset.theme = th0;
+      $("#th").onclick = () => {
+        const d = document.documentElement, n = (d.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) == "dark" ? "light" : "dark";
+        d.dataset.theme = n;
+        sv("pbt", n);
+      };
+      function boom() {
+        const m = $("#st > div");
+        for (let i = 0; i < 28; i++) {
+          const p = document.createElement("i");
+          p.className = "cf";
+          p.style.cssText = `left:${R(100)}%;background:var(--${Object.keys(E)[i % 5]});animation-delay:${R(300)}ms;--x:${R(120) - 60}px`;
+          m.append(p);
+          setTimeout(() => p.remove(), 1700);
+        }
+      }
+      let SND = ld("pbs", 1), AC;
+      let pul = 0;
+      function beep(ok, f) {
+        pul = ok ? 1 : -0.5;
+        if (!SND) return;
+        try {
+          AC ||= new (window.AudioContext || window.webkitAudioContext)();
+          const o = AC.createOscillator(), g = AC.createGain();
+          o.type = ok ? "sine" : "square";
+          o.frequency.value = f || (ok ? 660 : 180);
+          g.gain.value = 0.05;
+          o.connect(g); g.connect(AC.destination);
+          o.start(); o.stop(AC.currentTime + 0.12);
+        } catch {}
+      }
+      const sn = () => ($("#sn").textContent = SND ? "🔊" : "🔇");
+      sn();
+      $("#sn").onclick = () => { SND = SND ? 0 : 1; sv("pbs", SND); sn(); beep(1); };
+      if (P.c && !P.k) {
+        const [a, b] = P.c.split("-");
+        P.k = a;
+        P.s = b || "";
+      }
+      const CL = [...Array(12)].map((_, i) => String(i + 1)),
+        SE = ["A", "B", "C", "D", "E", "F"],
+        fill = (el, a, v) => {
+          el.innerHTML =
+            '<option value="">—</option>' +
+            a.map((x) => `<option>${x}</option>`).join("");
+          el.value = a.includes(v) ? v : "";
+        },
+        upd = () => {
+          const k = $("#ck").value,
+            q = $("#sc").value;
+          P = {
+            n: $("#nm").value.trim(),
+            k,
+            s: q,
+            c: k && q ? k + "-" + q : "",
+          };
+          sv("pbp", P);
+          clearTimeout(upd.t);
+          if (au && au.currentUser && P.n && P.c)
+            upd.t = setTimeout(() => db.ref("users/" + au.currentUser.uid).update({ n: P.n, k: P.k, s: P.s, c: P.c }).catch(() => {}), 700);
+          rend();
+        };
+      $("#nm").value = P.n;
+      $("#nm").oninput = $("#ck").onchange = $("#sc").onchange = upd;
+      $("#fv").onchange = (e) => {
+        vw = e.target.value;
+        lb();
+      };
+      $("#fg").onchange = $("#fc").onchange = lb;
+      $("#x").onclick = shut;
+      document.addEventListener("keydown", (e) => {
+        if (e.key == "Escape") shut();
+      });
+      $("#clr").onclick = (e) => {
+        const b = e.target;
+        if (b.dataset.s) {
+          S = [];
+          sv("pb", S);
+          lb();
+          b.textContent = t("clr");
+          delete b.dataset.s;
+        } else {
+          b.dataset.s = 1;
+          b.textContent = t("clr2");
+        }
+      };
+      function applyLang() {
+        fill($("#ck"), CL, P.k);
+        fill($("#sc"), SE, P.s);
+        if (!T[LG]) LG = "en";
+        document.documentElement.lang = LG;
+        $("#lg").value = LG;
+        document
+          .querySelectorAll("[data-i]")
+          .forEach((e) => (e.textContent = t(e.dataset.i)));
+        document
+          .querySelectorAll("[data-p]")
+          .forEach((e) => (e.placeholder = t(e.dataset.p)));
+        const g0 = $("#fg").value || "all";
+        $("#fg").innerHTML =
+          '<option value="all">' +
+          t("allg") +
+          "</option>" +
+          G.map((g) => `<option value="${g.id}">${gi(g)[0]}</option>`).join("");
+        $("#fg").value = g0;
+        delete $("#clr").dataset.s;
+        rend();
+        lb();
+      }
+      $("#lg").onchange = (e) => {
+        LG = e.target.value;
+        sv("pbl", LG);
+        applyLang();
+      };
+      function view(v) {
+        $("#hd").classList.toggle("hidden", v != "g");
+        $("#gm").classList.toggle("hidden", v != "g");
+        $("#lbs").classList.toggle("hidden", v != "l");
+        $("#tg").setAttribute("aria-selected", v == "g");
+        $("#tl").setAttribute("aria-selected", v == "l");
+        if (v == "l") lb();
+      }
+      const hv = () => (location.hash == "#leaderboard" ? "l" : "g"),
+        go = (v) => {
+          view(v);
+          try {
+            location.hash = v == "l" ? "leaderboard" : "games";
+          } catch {}
+        };
+      $("#tg").onclick = () => go("g");
+      $("#tl").onclick = () => go("l");
+      addEventListener("hashchange", () => view(hv()));
+      applyLang();
+      view(hv());
+      if (db) {
+        $("#clr").classList.add("hidden");
+        document.querySelector("[data-i=note]").dataset.i = "notefb";
+        applyLang();
+        window.startBoard = () => db.ref("board").on("value", (sn) => {
+          S = [];
+          Object.entries(sn.val() || {}).forEach(([u, p]) => {
+            if (!p || typeof p != "object") return;
+            Object.entries(p.b || {}).forEach(([g, s]) => {
+              if (G.some((x) => x.id == g) && Number.isFinite(+s))
+                S.push({ u, n: String(p.n || "?").slice(0, 20), c: String(p.c || "").slice(0, 5), g, s: +s });
+            });
+          });
+          lb();
+          rend();
+          fbStat("");
+        }, (e) => fbStat("Leaderboard can't load: " + ((e && e.message) || "permission denied") + " - check Firebase database rules", 1));
+        db.ref(".info/connected").on("value", (sn) => {
+          if (sn.val() === true) { fbStat(""); fbFlush(); }
+          else fbStat("Offline - showing last known scores", 1);
+        });
+      }
+
+      /* ---------- login (Firebase Authentication, email + password) ---------- */
+      const AU = $("#au"),
+        ae = (m) => ($("#aer").textContent = m || ""),
+        aerr = (e) => {
+          const c = (e && e.code) || "";
+          return /invalid-credential|wrong-password|user-not-found/.test(c) ? "Wrong email or password."
+            : c.includes("invalid-email") ? "Enter a valid email address."
+            : c.includes("email-already") ? "That email already has an account - log in instead."
+            : c.includes("weak-password") ? "Password must be at least 6 characters."
+            : c.includes("missing-password") ? "Type your password."
+            : c.includes("user-disabled") ? "This account has been disabled."
+            : c.includes("network") ? "No internet connection."
+            : c.includes("operation-not-allowed") ? "Email/Password login is not enabled in Firebase Authentication."
+            : c.includes("too-many") ? "Too many attempts. Try again in a few minutes."
+            : "Something went wrong. Try again.";
+        },
+        /* one inbox = one account: Gmail ignores dots and +tags, googlemail.com is gmail.com, +tags are ignored everywhere */
+        canon = (e) => {
+          let [l, d = ""] = String(e).trim().toLowerCase().split("@");
+          l = l.split("+")[0];
+          if (d == "googlemail.com") d = "gmail.com";
+          if (d == "gmail.com") l = l.replace(/\./g, "");
+          return l + "@" + d;
+        },
+        h53 = (str, seed) => {
+          let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+          for (let i = 0; i < str.length; i++) {
+            const ch = str.charCodeAt(i);
+            h1 = Math.imul(h1 ^ ch, 2654435761);
+            h2 = Math.imul(h2 ^ ch, 1597334677);
+          }
+          h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+          h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+          return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+        },
+        /* the database stores only a hash of the email, never the address itself */
+        ekey = (e) => { const c = canon(e); return h53(c, 1).toString(36) + h53(c, 2).toString(36); },
+        /* true = this inbox is now (or already) this user's; false = another account owns it. Throws if the database rules block it. */
+        claim = async (e, uid) => {
+          const r = db.ref("emails/" + ekey(e)), v = (await r.once("value")).val();
+          if (v && v !== uid) return false;
+          return (await r.transaction((c) => (c === null || c === uid ? uid : undefined))).committed;
+        };
+      let amode = "in", signing = 0, started = 0;
+      fill($("#ack"), CL, "");
+      fill($("#asc2"), SE, "");
+      function amodeSet(m) {
+        amode = m;
+        const pf = m == "profile";
+        $("#atabs").classList.toggle("hidden", pf);
+        $("#acr").classList.toggle("hidden", pf);
+        $("#asu").classList.toggle("hidden", m == "in");
+        $("#aem").required = $("#apw").required = !pf;
+        $("#abtn").textContent = pf ? "Save and continue" : m == "up" ? "Create account" : "Log in";
+        $("#afg").textContent = pf ? "Log out" : "Forgot password?";
+        $("#apw").autocomplete = m == "up" ? "new-password" : "current-password";
+        $("#ain").setAttribute("aria-selected", m == "in");
+        $("#aup").setAttribute("aria-selected", m == "up");
+        ae();
+      }
+      $("#ain").onclick = () => amodeSet("in");
+      $("#aup").onclick = () => amodeSet("up");
+      amodeSet("in");
+      function enter(prof) {
+        if (prof) { P = { n: prof.n || "", k: prof.k || "", s: prof.s || "", c: prof.c || "" }; sv("pbp", P); }
+        const cu = au && au.currentUser;
+        if (prof && cu) sv("pbp_" + cu.uid, prof);
+        $("#apw").value = "";
+        $("#nm").value = P.n;
+        applyLang();
+        AU.classList.add("hidden");
+        $("#lo").classList.remove("hidden");
+        if (!started) { started = 1; startBoard(); }
+        rend();
+      }
+      $("#aform").onsubmit = async (e) => {
+        e.preventDefault();
+        if (!au) return ae("Connect to the internet and reopen the app to log in.");
+        if ($("#abtn").disabled) return;
+        const em = $("#aem").value.trim().toLowerCase(), pw = $("#apw").value;
+        $("#abtn").disabled = true;
+        ae();
+        let made = null;
+        try {
+          if (amode == "in") await au.signInWithEmailAndPassword(em, pw);
+          else {
+            const n = $("#anm").value.trim(), k = $("#ack").value, q = $("#asc2").value;
+            if (!n || !k || !q) throw { msg: "Enter your name, class and section." };
+            const prof = { n, k, s: q, c: k + "-" + q };
+            signing = 1;
+            const user = amode == "up" ? (made = (await au.createUserWithEmailAndPassword(em, pw)).user) : au.currentUser;
+            if (!user) throw { msg: "Please log in again." };
+            /* a sign-up must not leave an account without its profile */
+            try { await db.ref("users/" + user.uid).set(prof); }
+            catch { try { await db.ref("users/" + user.uid).set(prof); } catch { throw { msg: "Could not save your profile. Check your internet and try again." }; } }
+            if (amode == "up") {
+              /* the same inbox written another way (dots, +tag, googlemail) is still the same email */
+              let free = true;
+              try { free = await claim(em, user.uid); } catch {}
+              if (!free) {
+                try { await db.ref("users/" + user.uid).remove(); } catch {}
+                throw { msg: "That email already has an account - log in instead." };
+              }
+            }
+            signing = 0;
+            made = null;
+            enter(prof);
+          }
+        } catch (x) {
+          signing = 0;
+          if (made) { try { await made.delete(); } catch {} }
+          ae(x.msg || aerr(x));
+        }
+        $("#abtn").disabled = false;
+      };
+      $("#afg").onclick = async () => {
+        if (amode == "profile") return au && au.signOut();
+        const em = $("#aem").value.trim().toLowerCase();
+        if (!au) return ae("Connect to the internet and reopen the app.");
+        if (!em) return ae("Type your email above first.");
+        try { await au.sendPasswordResetEmail(em); ae("Reset link sent - check your email."); } catch (x) { ae(aerr(x)); }
+      };
+      $("#lo").onclick = () => au && au.signOut();
+      if (au)
+        au.onAuthStateChanged(async (u) => {
+          if (signing) return;
+          if (!u) {
+            const wasIn = started || amode == "profile";
+            if (started) { db.ref("board").off("value"); started = 0; }
+            S = [];
+            P = { n: "", c: "" };
+            sv("pbp", P);
+            $("#nm").value = "";
+            applyLang();
+            $("#lo").classList.add("hidden");
+            AU.classList.remove("hidden");
+            if (wasIn) { $("#aem").value = ""; $("#apw").value = ""; amodeSet("in"); }
+            return;
+          }
+          let prof = null, bad = 0;
+          try { prof = (await db.ref("users/" + u.uid).once("value")).val(); } catch { bad = 1; }
+          if (bad) prof = ld("pbp_" + u.uid, null);
+          if (bad && !prof) { ae("Could not load your profile. Check your connection and try again."); return au.signOut(); }
+          if (!prof || !prof.n || !prof.c) {
+            /* account exists but its name/class was never saved: ask for it instead of showing a blank player */
+            amodeSet("profile");
+            $("#anm").value = (prof && prof.n) || "";
+            return ae("Almost done - add your name, class and section to continue.");
+          }
+          enter(prof);
+          if (u.email) claim(u.email, u.uid).catch(() => {});
+        });
+      else { AU.classList.add("hidden"); $("#msg").textContent = "Offline mode: scores are saved on this device only."; }
+
+      /* ---------- deterrents: block right-click, inspect shortcuts, console ---------- */
+      document.addEventListener("contextmenu", (e) => e.preventDefault());
+      document.addEventListener(
+        "keydown",
+        (e) => {
+          const k = (e.key || "").toLowerCase(),
+            c = e.ctrlKey || e.metaKey;
+          if (
+            e.key == "F12" ||
+            (c && e.shiftKey && "ijc".includes(k)) ||
+            (c && e.altKey && !(e.getModifierState && e.getModifierState("AltGraph")) && "iju".includes(k)) ||
+            (c && k == "u")
+          ) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        },
+        true,
+      );
+      [
+        "log",
+        "info",
+        "warn",
+        "error",
+        "debug",
+        "table",
+        "dir",
+        "trace",
+      ].forEach((m) => {
+        try {
+          console[m] = () => {};
+        } catch {}
+      });
+    </script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        if (window.Capacitor || location.hostname == "localhost") {
+          /* inside the Android app files are local: a service worker only serves stale copies */
+          navigator.serviceWorker.getRegistrations().then((r) => r.forEach((x) => x.unregister())).catch(() => {});
+          if (window.caches) caches.keys().then((k) => k.forEach((x) => caches.delete(x))).catch(() => {});
+        } else if (location.protocol.startsWith("http"))
+          addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+      }
+    </script>
+<script>
+/* ===== v4 app layer ===== */
+(() => {
+  let MODE = null; const FBOK = !!au, BT = sessionStorage.getItem("pbgo") ? 600 : 1700; const t0 = Date.now(), boot = $("#boot");
+  const hide = () => { if (!boot || boot.dataset.d) return; boot.dataset.d = 1; const w = Math.max(0, BT - (Date.now() - t0)); setTimeout(() => { boot.classList.add("out"); setTimeout(() => boot.remove(), 600); }, w); };
+  if (document.readyState == "complete") hide(); else addEventListener("load", hide);
+  setTimeout(hide, 5000);
+  let tt; const toast = (m) => { const e = $("#toast"); e.textContent = m; e.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => e.classList.remove("on"), 2600); };
+  addEventListener("offline", () => toast("You're offline. Scores sync when you reconnect."));
+  addEventListener("online", () => toast("Back online"));
+  const L = { en: ["Games", "Ranks", "Profile", "Settings", "Dark mode", "Sound", "Vibration", "Language", "Log out", "Points", "Played", "Rank", "day streak", "Guest"], hi: ["खेल", "रैंक", "प्रोफ़ाइल", "सेटिंग्स", "डार्क मोड", "ध्वनि", "कंपन", "भाषा", "लॉग आउट", "अंक", "खेले", "रैंक", "दिन की लकीर", "अतिथि"], ta: ["விளையாட்டு", "தரவரிசை", "சுயவிவரம்", "அமைப்புகள்", "இருள் பயன்முறை", "ஒலி", "அதிர்வு", "மொழி", "வெளியேறு", "புள்ளிகள்", "விளையாடியவை", "தரம்", "நாள் தொடர்", "விருந்தினர்"] };
+  const l = (i) => (L[LG] || L.en)[i];
+  /* daily streak */
+  const day = (d) => d.toISOString().slice(0, 10), td = day(new Date()), yd = day(new Date(Date.now() - 864e5));
+  let ST = ld("pbstreak", { d: "", n: 0 });
+  if (ST.d != td) { ST = { d: td, n: ST.d == yd ? ST.n + 1 : 1 }; sv("pbstreak", ST); }
+  /* haptics */
+  let HAP = ld("pbh", 1);
+  const _bp = beep; beep = function (ok, f) { _bp(ok, f); try { if (HAP && navigator.vibrate) navigator.vibrate(ok ? 10 : [25, 40, 25]); } catch {} };
+  /* bottom bar */
+  const I = { g: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/>', l: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>', p: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' };
+  const bar = () => { $("#bb").innerHTML = ["g", "l", "p"].map((k, i) => `<button role="tab" data-k="${k}" aria-label="${l(i == 1 ? 1 : i)}"><svg viewBox="0 0 24 24">${I[k]}</svg>${l(i)}</button>`).join(""); $("#bb").querySelectorAll("button").forEach((b) => (b.onclick = () => { navigator.vibrate && HAP && navigator.vibrate(8); b.dataset.k == "p" ? sheet() : (go(b.dataset.k), scrollTo({ top: 0 })); })); mark(hv()); };
+  const mark = (v) => $("#bb") && $("#bb").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.k == v));
+  const _v = view; view = function (v) { _v(v); mark(v); const s = $(v == "l" ? "#lbs" : "#gm"); if (s) { s.classList.remove("pg"); void s.offsetWidth; s.classList.add("pg"); } };
+  const BN = { en: ["Panchabhuta", "Mind Games"], hi: ["पंचभूत", "दिमागी खेल"], ta: ["பஞ்சபூதம்", "மூளை விளையாட்டுகள்"] };
+  const brand = () => { const b = BN[LG] || BN.en; document.querySelectorAll(".bn").forEach((e) => (e.textContent = b[0])); document.querySelectorAll(".bs").forEach((e) => (e.textContent = b[1])); document.title = b[0] + " " + b[1]; const a = $("#alg"); if (a) a.value = LG; };
+  const _al = applyLang; applyLang = function () { _al(); brand(); bar(); greet(); modeTxt(); };
+  $("#alg").onchange = (e) => { const g = $("#lg"); g.value = e.target.value; g.dispatchEvent(new Event("change")); };
+  /* name, class and section are chosen once at sign-up; the home screen no longer lets players edit them */
+  document.body.classList.add("lk");
+  /* greeting */
+  const greet = () => { let e = $("#hi"); if (!e) { e = document.createElement("p"); e.id = "hi"; e.className = "hi"; $("#hd").prepend(e); } const h = new Date().getHours(); e.innerHTML = esc((h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening") + (P.n ? ", " + P.n : "") + (P.c ? " (" + P.c + ")" : "") + " 👋  ·  ⚡ " + ST.n + " " + l(12)) + (MODE ? `<span class="mp" style="--c:var(--${MODE == "off" ? "jala" : "agni"})">${MODE == "off" ? "💧 " + M().w : "🔥 " + M().f}</span>` : ""); msync(); };
+  const _r = rend; rend = function () { _r(); greet(); document.querySelectorAll(".gc").forEach((e, i) => e.style.setProperty("--k", i % 4)); };
+  /* settings / profile sheet */
+  const mine = () => { const mu = au && au.currentUser ? au.currentUser.uid : null, seen = {}, by = {}; let tot = 0; S.forEach((r) => { const k = r.u || r.n + "|" + r.c; by[k] = (by[k] || 0) + r.s; if (mu && r.u ? r.u === mu : r.n == P.n && r.c == P.c) { tot += r.s; seen[r.g] = 1; } }); const me = mu || P.n + "|" + P.c, a = Object.values(by).sort((x, y) => y - x); return { tot, n: Object.keys(seen).length, rk: by[me] != null ? a.indexOf(by[me]) + 1 : 0 }; };
+  const dk = () => (document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) == "dark";
+  function sheet() {
+    const m = mine(), em = au && au.currentUser && au.currentUser.email;
+    $("#pn").innerHTML = `<div class="grab"></div><div class="flex items-center gap-3"><div class="av">${esc((P.n || "?")[0].toUpperCase())}</div><div class="min-w-0"><div class="f text-2xl truncate">${esc(P.n || l(13))}</div><div style="color:var(--mut)" class="text-sm truncate">${P.c ? t("cls") + " " + esc(P.c) : ""}${em ? " · " + esc(em) : ""}</div></div></div>
+<div class="kp"><div><b>${m.tot}</b>${l(9)}</div><div><b>${m.n}/${G.length}</b>${l(10)}</div><div><b>${m.rk ? "#" + m.rk : "–"}</b>${l(11)}</div></div>
+<div class="row" data-a="th"><span>🌙 ${l(4)}</span><i class="sw ${dk() ? "on" : ""}"></i></div>
+<div class="row" data-a="sn"><span>🔊 ${l(5)}</span><i class="sw ${SND ? "on" : ""}"></i></div>
+<div class="row" data-a="hp"><span>📳 ${l(6)}</span><i class="sw ${HAP ? "on" : ""}"></i></div>
+<div class="row"><span>🌐 ${l(7)}</span><select id="pl" class="inp !text-base"><option value="en">English</option><option value="hi">हिन्दी</option><option value="ta">தமிழ்</option></select></div>
+${au && au.currentUser ? `<button class="btn2 w-full mt-3" data-a="lo" style="color:var(--agni);font-weight:800">${l(8)}</button>` : ""}
+<div class="row" data-a="md"><span>${MODE == "off" ? "💧" : "🔥"} ${M().sw}</span><span style="color:var(--mut)">${MODE == "off" ? M().w : M().f} ›</span></div>${MODE == "off" ? `<div class="row" data-a="np"><span>👤 ${M().np}</span><span style="color:var(--mut)">›</span></div>` : ""}
+<p class="text-center text-xs mt-4" style="color:var(--mut)">Panchabhuta Mind Games · v2.0</p>`;
+    $("#pl").value = LG;
+    $("#pn").querySelectorAll("[data-a]").forEach((r) => (r.onclick = () => { const a = r.dataset.a; if (a == "th") $("#th").click(); else if (a == "sn") $("#sn").click(); else if (a == "hp") { HAP = HAP ? 0 : 1; sv("pbh", HAP); } else if (a == "md") { close(); swMode(MODE == "off" ? "on" : "off"); return; } else if (a == "np") { if (confirm(M().sure)) { sv("pbp_off", null); location.reload(); } return; } else if (a == "lo") { close(); $("#lo").click(); return; } sheet(); }));
+    $("#pl").onchange = (e) => { const g = $("#lg"); g.value = e.target.value; g.dispatchEvent(new Event("change")); sheet(); };
+    $("#sheet").classList.add("on");
+  }
+  const close = () => $("#sheet").classList.remove("on");
+  $("#sheet").onclick = (e) => e.target.id == "sheet" && close();
+  const gb = document.createElement("button"); gb.id = "gear"; gb.className = "btn2 !px-3"; gb.setAttribute("aria-label", "Settings"); gb.textContent = "⚙️"; gb.onclick = sheet; $("nav .ml-auto").prepend(gb);
+  /* hardware back: close sheet / game instead of leaving the app */
+  const _og = openG; openG = function (g) { _og(g); if (live) try { history.pushState({ g: 1 }, ""); } catch {} };
+  addEventListener("popstate", () => { if ($("#sheet").classList.contains("on")) close(); else if (live || !$("#st").classList.contains("hidden")) shut(); });
+  /* password eye */
+  const pw = $("#apw"), w = document.createElement("div"); w.className = "pwrap"; pw.before(w); const ey = document.createElement("button"); ey.type = "button"; ey.textContent = "👁"; ey.setAttribute("aria-label", "Show password"); ey.onclick = () => { pw.type = pw.type == "password" ? "text" : "password"; ey.style.opacity = pw.type == "text" ? 1 : .7; }; w.append(pw, ey);
+  /* status bar colour follows theme */
+  const mt = document.querySelector('meta[name="theme-color"]'), sync = () => mt && (mt.content = getComputedStyle(document.body).backgroundColor);
+  new MutationObserver(sync).observe(document.documentElement, { attributes: true }); sync();
+  brand(); bar(); greet();
+  /* ===== Fire = online mode, Water = offline mode ===== */
+  const MT = {
+    en: { q: "Choose how you want to play", f: "Online", fd: "Log in, play with your class and climb the live leaderboard.", w: "Offline", wd: "No internet needed. Scores stay on this device.", nc: "No connection. Connect to the internet and reopen the app.", ph: "Create your player", pn: "Your name", st: "Start playing", bk: "Back", sw: "Switch mode", np: "New player", sure: "Start as a new player? Existing scores stay on this device.", er: "Enter your name, class and section." },
+    hi: { q: "खेलने का तरीका चुनें", f: "ऑनलाइन", fd: "लॉग इन करें, अपनी कक्षा के साथ खेलें और लाइव लीडरबोर्ड पर चढ़ें।", w: "ऑफ़लाइन", wd: "इंटरनेट की ज़रूरत नहीं। स्कोर इसी डिवाइस पर रहते हैं।", nc: "कनेक्शन नहीं है। इंटरनेट से जुड़कर ऐप फिर खोलें।", ph: "अपना खिलाड़ी बनाएँ", pn: "आपका नाम", st: "खेलना शुरू करें", bk: "वापस", sw: "मोड बदलें", np: "नया खिलाड़ी", sure: "नया खिलाड़ी बनाएँ? पुराने स्कोर इसी डिवाइस पर रहेंगे।", er: "अपना नाम, कक्षा और सेक्शन भरें।" },
+    ta: { q: "எப்படி விளையாட விரும்புகிறீர்கள்?", f: "ஆன்லைன்", fd: "உள்நுழைந்து, உங்கள் வகுப்புடன் விளையாடி நேரலை முன்னணிப் பலகையில் உயருங்கள்.", w: "ஆஃப்லைன்", wd: "இணையம் தேவையில்லை. மதிப்பெண்கள் இந்தச் சாதனத்தில் இருக்கும்.", nc: "இணைப்பு இல்லை. இணையத்துடன் இணைத்து ஆப்பை மீண்டும் திறக்கவும்.", ph: "உங்கள் வீரரை உருவாக்குங்கள்", pn: "உங்கள் பெயர்", st: "விளையாடத் தொடங்கு", bk: "பின்செல்", sw: "முறையை மாற்று", np: "புதிய வீரர்", sure: "புதிய வீரராகத் தொடங்கவா? பழைய மதிப்பெண்கள் இந்தச் சாதனத்தில் இருக்கும்.", er: "உங்கள் பெயர், வகுப்பு, பிரிவை நிரப்புங்கள்." }
+  };
+  function M() { return MT[LG] || MT.en; }
+  function modeTxt() {
+    const m = M();
+    $("#mq").textContent = m.q; $("#mf b").textContent = m.f; $("#mf span").textContent = m.fd; $("#mo b").textContent = m.w; $("#mo span").textContent = m.wd;
+    $("#oh").textContent = m.ph; $("#obtn").textContent = m.st; $("#oback").textContent = m.bk; $("#onm").placeholder = m.pn; $("#mlg").value = LG;
+    fill($("#ock"), CL, $("#ock").value); fill($("#osc"), SE, $("#osc").value);
+  }
+  function setP(p) { P = { n: p.n, k: p.k, s: p.s, c: p.c }; sv("pbp", P); sv("pbp_off", P); $("#nm").value = P.n; $("#msg").textContent = ""; applyLang(); }
+  function goOff() {
+    MODE = "off";
+    try { if (db) { db.ref("board").off(); db.ref(".info/connected").off(); } } catch {}
+    signing = 1; db = null; au = null;
+    AU.classList.add("hidden"); $("#lo").classList.add("hidden"); fbStat("");
+    S = ld("pb", []);
+    const n = document.querySelector("[data-i=notefb]"); if (n) n.dataset.i = "note";
+    $("#clr").classList.remove("hidden");
+    const p = ld("pbp_off", null);
+    if (p && p.n && p.c) setP(p); else { P = { n: "", c: "" }; applyLang(); $("#op").classList.remove("out"); }
+  }
+  const _en = enter; enter = function (p) { if (MODE == "off") return; _en(p); };
+  $("#mf").onclick = () => { if (!au || navigator.onLine === false) return toast(M().nc); MODE = "on"; $("#md").classList.add("out"); greet(); };
+  $("#mo").onclick = () => { goOff(); $("#md").classList.add("out"); };
+  $("#mlg").onchange = (e) => { const g = $("#lg"); g.value = e.target.value; g.dispatchEvent(new Event("change")); };
+  $("#opf").onsubmit = (e) => { e.preventDefault(); const n = $("#onm").value.trim(), k = $("#ock").value, q = $("#osc").value; if (!n || !k || !q) return ($("#oer").textContent = M().er); $("#oer").textContent = ""; setP({ n, k, s: q, c: k + "-" + q }); $("#op").classList.add("out"); };
+  $("#oback").onclick = () => location.reload();
+  modeTxt();
+  /* ===== v5: instant mode switch + effects ===== */
+  function msync() { const m = MODE || "on"; document.documentElement.dataset.mode = MODE || ""; const w = window._msw; if (w) { w.dataset.m = m; const l = w.querySelectorAll(".ml"); l[0].textContent = M().f; l[1].textContent = M().w; } if (window._mnb) _mnb.textContent = (m == "off" ? "💧" : "🔥") + " ⇄"; }
+  function wave(c, x, y, cb) { const w = document.createElement("div"); w.className = "wave"; w.style.cssText = `left:${x}px;top:${y}px;background:${c}`; document.body.append(w); requestAnimationFrame(() => requestAnimationFrame(() => w.classList.add("go"))); setTimeout(cb, 680); }
+  function swMode(m, x, y) {
+    if (m == MODE) return;
+    if (m == "on" && (!FBOK || navigator.onLine === false)) return toast(M().nc);
+    try { sessionStorage.setItem("pbgo", m); } catch {}
+    try { HAP && navigator.vibrate && navigator.vibrate(18); } catch {}
+    wave(m == "on" ? "#ff6a3d" : "#0ea5e9", x ?? innerWidth / 2, y ?? innerHeight / 2, () => location.reload());
+  }
+  const msw = document.createElement("div"); msw.className = "msw"; msw.setAttribute("role", "group"); window._msw = msw;
+  msw.innerHTML = '<button data-m="on">🔥 <span class="ml"></span></button><button data-m="off">💧 <span class="ml"></span></button>';
+  msw.querySelectorAll("button").forEach((b) => (b.onclick = (e) => swMode(b.dataset.m, e.clientX, e.clientY)));
+  $("#hi").after(msw);
+  const mnb = document.createElement("button"); mnb.id = "mnb"; mnb.className = "btn2 !px-3"; mnb.setAttribute("aria-label", "Switch online / offline mode"); window._mnb = mnb;
+  mnb.onclick = (e) => swMode(MODE == "off" ? "on" : "off", e.clientX, e.clientY); $("nav .ml-auto").prepend(mnb);
+  /* the whole page glows fire or water as you hover the mode cards */
+  const root = document.documentElement;
+  [["#mf", "on"], ["#mo", "off"]].forEach(([s, m]) => { $(s).addEventListener("pointerenter", () => { if (!MODE) root.dataset.mode = m; }); $(s).addEventListener("pointerleave", () => { if (!MODE) root.dataset.mode = ""; }); });
+  /* ambient particles: embers when online, bubbles when offline */
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const cv = document.createElement("canvas"); cv.id = "fx"; document.body.prepend(cv); const c = cv.getContext("2d"); let W, H, last = 0;
+    const rs = () => { W = cv.width = innerWidth; H = cv.height = innerHeight; }; rs(); addEventListener("resize", rs);
+    const pal = () => (MODE == "off" ? ["#38bdf8", "#22d3ee", "#a5f3fc", "#818cf8"] : MODE == "on" ? ["#ff7a52", "#fbbf24", "#f43f5e", "#fde68a"] : ["#9b9bff", "#38bdf8", "#3dd68c", "#fbbf24"]);
+    const N = innerWidth < 700 ? 14 : 30, PT = Array.from({ length: N }, () => ({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: 1.5 + Math.random() * 4, v: .2 + Math.random() * .6, d: Math.random() * 6, k: R(4) }));
+    const draw = (t) => {
+      requestAnimationFrame(draw); if (document.hidden || t - last < 42 || !$("#st").classList.contains("hidden")) return; last = t; c.clearRect(0, 0, W, H); const P2 = pal(), up = MODE == "off" ? 1 : 1.5;
+      PT.forEach((p) => { p.y -= p.v * up; p.x += Math.sin((p.d += .012)) * .5; if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; } c.globalAlpha = MODE == "off" ? .5 : .4; c.beginPath(); c.arc(p.x, p.y, p.r, 0, 6.3); if (MODE == "off") { c.strokeStyle = P2[p.k]; c.lineWidth = 1.2; c.stroke(); } else { c.fillStyle = P2[p.k]; c.fill(); } });
+    };
+    requestAnimationFrame(draw);
+  }
+  /* card spotlight + tilt */
+  let tc = null; const gm = $("#gm");
+  const rt = () => { if (tc) { tc.style.removeProperty("--rx"); tc.style.removeProperty("--ry"); } };
+  gm.addEventListener("pointermove", (e) => { if (e.pointerType == "touch") return; const _n = performance.now(); if (_n - (window._pm || 0) < 28) return; window._pm = _n; const k = e.target.closest(".gc"); if (tc && tc != k) rt(); tc = k; if (!k) return; const r = k.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height; k.style.setProperty("--mx", x * 100 + "%"); k.style.setProperty("--my", y * 100 + "%"); k.style.setProperty("--rx", (.5 - y) * 9 + "deg"); k.style.setProperty("--ry", (x - .5) * 11 + "deg"); });
+  gm.addEventListener("pointerleave", () => { rt(); tc = null; });
+  /* ripple on every press */
+  document.addEventListener("pointerdown", (e) => { const b = e.target.closest(".btn,.btn2,.opt,.chip"); if (!b || b.disabled) return; const r = b.getBoundingClientRect(), d = Math.max(r.width, r.height) * 2, i = document.createElement("i"); i.className = "rpl"; i.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`; b.append(i); setTimeout(() => i.remove(), 700); }, { passive: true });
+  /* score count-up, bigger confetti, last-seconds warning */
+  const _end = end; end = function (s) { const was = live; _end(s); if (!was) return; const p = $("#box p.f"); if (!p) return; const v = +p.textContent; let st = null; const f = (t) => { st ??= t; const k = Math.min(1, (t - st) / 900); p.textContent = Math.round(v * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); };
+  const _bm = boom; boom = function () { _bm(); setTimeout(_bm, 240); };
+  let _ln = -1;
+  const cdn = document.createElement("div"); cdn.id = "cdn"; cdn.setAttribute("aria-hidden", "true"); $("#st").append(cdn);
+  const alarm = (n) => { cdn.textContent = n; cdn.className = ""; void cdn.offsetWidth; cdn.className = n <= 2 ? "go hot" : "go"; };
+  new MutationObserver(() => { const n = parseInt($("#tm").textContent); $("#st > div").classList.toggle("urgent", n > 0 && n <= 5); $("#st").classList.toggle("urg", n > 0 && n <= 5); if (n !== _ln) { if ((n > 0 && n <= 5) || (n === 0 && _ln === 1)) alarm(n); _ln = n; } }).observe($("#tm"), { childList: true, characterData: true, subtree: true });
+  msync();
+  /* arriving from a mode switch: skip the chooser */
+  const go2 = sessionStorage.getItem("pbgo"); sessionStorage.removeItem("pbgo");
+  if (go2 == "off") $("#mo").click(); else if (go2 == "on") $("#mf").click();
+})();
+</script>
+  <script>
+/* ===== v6 game FX: particle bursts, screen shake, score pops ===== */
+(() => {
+  const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const box = document.getElementById("box"), win = document.querySelector("#st>div");
+  if (!box) return;
+  const COL = { ok: ["#3dd68c", "#b9ffd9", "#fff6c2", "#38bdf8"], bad: ["#ff7a52", "#ff3d3d", "#ffd0c2"], hit: ["#ffb347", "#ff7a52", "#fff6c2", "#f43f5e"], star: ["#f5b83d", "#fff6c2", "#fff"] };
+  let NP = 0;
+  function burst(x, y, kind, n) {
+    if (RM || NP > 36) return;
+    n = Math.min(n || 16, 12);
+    const cols = COL[kind] || COL.ok; n = n || 16;
+    for (let i = 0; i < n; i++) {
+      const p = document.createElement("i");
+      const sq = Math.random() < .35;
+      p.className = "fxp d" + (sq ? " s" : "");
+      const c = cols[i % cols.length]; p.style.background = c; p.style.color = c;
+      document.body.append(p); NP++;
+      const a = Math.random() * 6.283, d = 40 + Math.random() * 70, g = 30 + Math.random() * 40;
+      const dx = Math.cos(a) * d, dy = Math.sin(a) * d;
+      p.animate([
+        { transform: `translate(${x - 4}px,${y - 4}px) scale(1)`, opacity: 1 },
+        { transform: `translate(${x - 4 + dx}px,${y - 4 + dy + g}px) scale(0) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+      ], { duration: 500 + Math.random() * 250, easing: "cubic-bezier(.2,.8,.3,1)" }).onfinish = () => { p.remove(); NP--; };
+    }
+  }
+  function pop(x, y, txt, col) {
+    if (RM) return;
+    const p = document.createElement("i");
+    p.className = "fxp"; p.textContent = txt;
+    p.style.cssText = `font-weight:800;font-size:1.3rem;color:${col};text-shadow:0 2px 8px rgba(0,0,0,.5),0 0 12px ${col}`;
+    document.body.append(p);
+    p.animate([
+      { transform: `translate(${x - 14}px,${y - 10}px) scale(.5)`, opacity: 0 },
+      { transform: `translate(${x - 14}px,${y - 34}px) scale(1.2)`, opacity: 1, offset: .3 },
+      { transform: `translate(${x - 14}px,${y - 70}px) scale(1)`, opacity: 0 }
+    ], { duration: 850, easing: "ease-out" }).onfinish = () => p.remove();
+  }
+  const ctr = (el) => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+  const shake = () => { if (RM) return; box.classList.remove("shk"); void box.offsetWidth; box.classList.add("shk"); setTimeout(() => box.classList.remove("shk"), 400); };
+
+  /* fireballs, bubbles, stars: burst on press */
+  box.addEventListener("pointerdown", (e) => {
+    const t = e.target.closest(".spark,.bub,.star,.em,.pad");
+    if (!t) return;
+    const [x, y] = ctr(t);
+    if (t.matches(".spark")) { burst(x, y, "hit", 22); pop(x, y, "+10", "#ffd45e"); }
+    else if (t.matches(".star")) burst(x, y, "star", 14);
+    else burst(x, y, "ok", 10);
+  }, true);
+
+  /* correct / wrong / lit feedback from class changes */
+  const seen = new WeakMap();
+  new MutationObserver((ms) => {
+    for (const m of ms) {
+      if (m.type !== "attributes") continue;
+      const el = m.target; if (!(el instanceof Element)) continue;
+      const was = seen.get(el) || "", now = el.className;
+      seen.set(el, now);
+      const gained = (c) => now.split(" ").includes(c) && !was.split(" ").includes(c);
+      if (gained("ok")) { const [x, y] = ctr(el); burst(x, y, "ok", 14); }
+      else if (gained("bad")) { const [x, y] = ctr(el); burst(x, y, "bad", 12); shake(); }
+      else if (gained("gone")) { const [x, y] = ctr(el); burst(x, y, "ok", 16); }
+    }
+  }).observe(box, { subtree: true, attributes: true, attributeFilter: ["class"] });
+
+})();
+</script>
+
+<div id="ins" role="dialog" aria-label="Install app"><span id="inst">📲 Install app</span><b id="inb">Install</b><i id="inx" aria-label="Dismiss">✕</i></div>
+<script>
+/* PWA: service worker + install prompt */
+(() => {
+  if ("serviceWorker" in navigator && location.protocol !== "file:") addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  const box = document.getElementById("ins"), standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if (standalone || sessionStorage.getItem("pbins")) return;
+  let ev = null;
+  const show = (t, btn) => { document.getElementById("inst").textContent = t; document.getElementById("inb").textContent = btn; box.classList.add("on"); };
+  addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); ev = e; setTimeout(() => show("📲 Install app", "Install"), 4000); });
+  if (/iphone|ipad|ipod/i.test(navigator.userAgent)) setTimeout(() => show("Tap Share, then Add to Home Screen", "OK"), 6000);
+  document.getElementById("inb").onclick = async () => { if (ev) { ev.prompt(); await ev.userChoice.catch(() => {}); ev = null; } box.classList.remove("on"); sessionStorage.setItem("pbins", 1); };
+  document.getElementById("inx").onclick = () => { box.classList.remove("on"); sessionStorage.setItem("pbins", 1); };
+  addEventListener("appinstalled", () => box.classList.remove("on"));
+})();
+</script>
+</body>
+</html>
